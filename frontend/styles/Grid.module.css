@@ -1,0 +1,41 @@
+.hero {
+  margin-top: 8rem;
+  margin-bottom: 2rem;
+  height: 550px;
+}
+
+.container-hero {
+  display: grid;
+  grid-template-columns: 45% 35%;
+  gap: 20%;
+  margin: 0rem 15rem;
+  height: 550px;
+}
+
+.hero-image {
+  background-image: url(../public/img/hero-hondu-chamba-back.png);
+  height: 440px;
+  width: auto;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.container-hero-phrase {
+  align-self: center;
+}
+
+.title-hero {
+  font-size: 70px;
+  font-weight: 700;
+  line-height: 70px;
+  font-family: var(--fuente-secundaria);
+  color: var(--primary);
+}
+
+.description-hero  {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 30px;
+  font-family: var(--fuente-secundaria);
+}
