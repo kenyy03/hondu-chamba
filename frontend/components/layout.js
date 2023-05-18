@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import React from 'react'
 import Navbar from './navbar'
+import Footer from './footer'
 
 export default function Layout({ children, title = '', description = '', isOnLogin = false  }) {
   return (
@@ -13,6 +14,7 @@ export default function Layout({ children, title = '', description = '', isOnLog
       <>
         { children }
       </>
+      <Footer />
     </>
   )
 }

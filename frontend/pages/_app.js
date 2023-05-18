@@ -7,6 +7,7 @@ import { CacheProvider } from '@emotion/react';
 import { ChakraProvider } from '@chakra-ui/react';
 import theme from '../styles/theme/index';
 import createEmotionCache from '@/config/createEmotionCache';
+import '@/styles/globals.css';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();

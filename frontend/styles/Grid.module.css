@@ -29,7 +29,7 @@
   font-size: 70px;
   font-weight: 700;
   line-height: 70px;
-  font-family: var(--fuente-secundaria);
+  font-family: var(--fuente-italic);
   color: var(--primary);
 }
 
@@ -38,4 +38,33 @@
   font-weight: 400;
   line-height: 30px;
   font-family: var(--fuente-secundaria);
+}
+
+.container {
+  margin: 1rem 15rem 10rem 15rem;
+}
+
+.title-category {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 70px;
+  font-family: var(--fuente-italic);
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+.mt-2 {
+  margin-top: 2rem;
+}
+.mt-3 {
+  margin-top: 3rem;
+}
+.my-1 {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+.my-3 {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
 }

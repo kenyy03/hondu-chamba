@@ -1,4 +1,4 @@
-import { Roboto } from 'next/font/google';
+import { Roboto, Outfit, Noto_Serif  } from 'next/font/google';
 import { createTheme } from '@mui/material/styles';
 import { red } from '@mui/material/colors';
 
@@ -24,6 +24,7 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: roboto.style.fontFamily,
+    fontSize: 25,
   },
 });
 

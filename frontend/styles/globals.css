@@ -2,9 +2,12 @@
   --primary: #319795;
   --black: #262626;
   --white: #FFF;
+  --gray: #e5e5e5;
+  --dark-gray: #c4c4c4;
   --fuente-principal: 'Outfit', sans-serif;
   --fuente-secundaria: 'Noto Serif', sans-serif;
   --fuente-terciaria: 'Roboto', sans-serif;
+  --fuente-italic: 'Lora', sans-serif;
 }
 
 

@@ -1,0 +1,123 @@
+.grid-container-find-work {
+  margin: 10rem 15rem;
+  display: flex;
+  gap: 8rem;
+}
+
+.my-10 {
+  margin: 10rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.title {
+  font-family: var(--fuente-secundaria);
+  font-weight: 700;
+  margin: 1rem 0;
+}
+
+.filter-title {
+  font-family: var(--fuente-secundaria);
+  font-weight: 400;
+  margin: 1.5rem 0;
+}
+
+.container-freelancer {
+  display: flex;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #e2e2e2;
+  align-items: center;
+  justify-content: center;
+}
+
+.container-freelancer-image {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+}
+
+.freelancer-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.container-freelancer-info {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.freelancer-name {
+  font-family: var(--fuente-secundaria);
+  font-weight: 700;
+  font-size: 2.5rem;
+  margin: 0.5rem 0;
+}
+
+.freelancer-description {
+  font-family: var(--fuente-secundaria);
+  font-weight: 400;
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.freelancer-skills {
+  font-family: var(--fuente-secundaria);
+  font-weight: 400;
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.skill {
+  margin: .8rem 0.5rem;
+  padding: .5rem .8rem;
+  border-radius: 0.5rem;
+  background-color: var(--gray);
+  color: var(--black);
+  font-family: var(--fuente-italic);
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.skill:hover {
+  background-color: var(--dark-gray);
+}
+
+.freelancer-actions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0.5rem 0;
+}
+
+.freelancer-button {
+  margin: 0 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  background-color: var(--primary);
+  color: var(--white);
+  font-family: var(--fuente-secundaria);
+  font-weight: 400;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.freelancer-button:hover {
+  background-color: var(--white);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}

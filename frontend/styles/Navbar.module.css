@@ -1,11 +1,15 @@
 .navbar-link, .active {
   font-weight: bold;
   font-size: 1.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  transition: all 300ms ease-in-out;
 }
 
 .navbar-link:hover,
 .active {
-  color: var(--primary);
+  background-color: var(--primary);
+  color: var(--white);
 }
 
 .sticky {

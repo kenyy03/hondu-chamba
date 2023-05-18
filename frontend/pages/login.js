@@ -16,16 +16,19 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function Login({ roles = [] }) {
+  const [isSelected, setIsSelected] = useState(false);
+  const handleOnSelectOption = (event) => setIsSelected(event.target.value); 
+
   return (
     <Layout title='Login' description='Login Page para usuarios registrados' isOnLogin={true} >
       <Flex
         alignItems='center'
         justifyContent='center'
         width='100dvw'
-        height='100dvh'
+        height='88.2dvh'
       >
         <Flex
           background='gray.100'
@@ -86,7 +89,7 @@ export default function Login({ roles = [] }) {
 
           <RadioGroup>
             <Stack direction='row' justifyContent='center' gap={5} fontSize={15} >
-              <RadioButton roles={roles ?? []} />
+              <RadioButton roles={roles ?? []} isSelected={isSelected} handleOnSelectOption={handleOnSelectOption} />
             </Stack>
           </RadioGroup>
 
