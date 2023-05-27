@@ -1,0 +1,54 @@
+.title-find-work {
+  font-family: var(--fuente-secundaria);
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  color: #000;
+}
+
+.container-find-work {
+  margin: 10rem 15rem;
+}
+
+.container-employes {
+  display: grid;
+  grid-template-columns: 35% 65%;
+  gap: 2.5rem;
+  background-color: var(--light-gray-test);
+  border-radius: 1.5rem;
+  padding: 1rem 2.5rem;
+}
+
+.header-details-employes {
+  display: grid;
+  grid-template-columns: 10% 36% auto;
+  gap: 2rem;
+}
+
+.vacant-name {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.employer {
+  font-size: 1.8rem;
+  font-weight: 400;
+}
+
+.details {
+  font-family: var(--fuente-secundaria);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--dark-gray);
+}
+
+.post-date {
+  font-family: var(--fuente-italic);
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--dark-gray);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}

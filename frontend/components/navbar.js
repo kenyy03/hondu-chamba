@@ -27,8 +27,8 @@ export default function Navbar({ isOnLogin = false }) {
             <Link href='/findTalent' passHref legacyBehavior>
               <a className={pathname === '/findTalent' ? styles['active'] : styles['navbar-link']}>Encontrar Talento</a>
             </Link>
-            <Link href={'/register'} passHref legacyBehavior>
-              <a className={pathname === '/register' ? styles['active'] : styles['navbar-link']}>Encontrar Trabajo</a>
+            <Link href={'/findWork'} passHref legacyBehavior>
+              <a className={pathname === '/findWork' ? styles['active'] : styles['navbar-link']}>Encontrar Trabajo</a>
             </Link>
           </>)}
         </Flex>

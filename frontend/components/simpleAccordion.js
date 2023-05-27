@@ -3,7 +3,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import styles from '../styles/Grid.module.css';
 import { catergories } from '@/pages';
 
-export default function SimpleAccordion({my = 'my-1'}) {
+export default function SimpleAccordion({my = 'my-1', fontSize = '12px'}) {
   return (
     <div className={styles[my]}>
       <Accordion>
@@ -22,14 +22,14 @@ export default function SimpleAccordion({my = 'my-1'}) {
                   <ListItemIcon>
                     {category?.icons}
                   </ListItemIcon>
-                  <ListItemText primary={category?.name} primaryTypographyProps={{fontSize: '20px'}}  />
+                  <ListItemText primary={category?.name} primaryTypographyProps={{fontSize: fontSize}}  />
                 </ListItemButton>
               </ListItem>
             ))}
           </List>
         </AccordionDetails>
       </Accordion>
-      <Accordion expanded={true} >
+      <Accordion >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
@@ -38,7 +38,7 @@ export default function SimpleAccordion({my = 'my-1'}) {
           <Typography>Localizacion</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <TextField id="outlined-basic" label="Buscar colonia" variant="outlined" />
+          <TextField id="outlined-basic" label="Buscar colonia" variant="outlined" fullWidth />
         </AccordionDetails>
       </Accordion>
     </div>
