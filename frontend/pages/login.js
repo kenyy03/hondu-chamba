@@ -1,29 +1,61 @@
 import Layout from '@/components/layout';
-import RadioButton from '@/components/radioButton';
-import { enviroment } from '@/config/enviroment';
-import { ArrowRightIcon, EmailIcon, LockIcon } from '@chakra-ui/icons';
+import { enviroment } from '../config/enviroment';
+import { ArrowRightIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
   Flex,
-  FormControl,
-  FormLabel,
   Heading,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  RadioGroup,
-  Stack,
   Text,
 } from '@chakra-ui/react';
+import { AccountCircle, LockOutlined } from '@mui/icons-material';
 import React, { useState } from 'react';
+import TextFieldIcons from '@/components/textFieldIcons';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserInfo } from '@/redux/features/userSlice';
 
-export default function Login({ roles = [] }) {
-  const [isSelected, setIsSelected] = useState(false);
-  const handleOnSelectOption = (event) => setIsSelected(event.target.value); 
+export default function Login() {
+  const [userLog, setUserLog] = useState({
+    email: '',
+    password: '',
+  });
+  const dispatch = useDispatch();
+  const userInfoState = useSelector(state => state.userReducer.userInfo);
+
+  const handleInputChanges = e => {
+    setUserLog({
+      ...userLog,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleLogin = async () => {
+    const url = `${enviroment?.DEV_BASE_API_URL}/login`;
+    setUserLog({ email: '', password: '' });
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userLog),
+      });
+      const { data = {} } = await response.json();
+      dispatch(setUserInfo(data));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onRenderAccountIcon = () => (<AccountCircle color='secondary' />);
+  const onRenderPasswordIcon = () => (<LockOutlined color='secondary' />);
 
   return (
-    <Layout title='Login' description='Login Page para usuarios registrados' isOnLogin={true} >
+    <Layout
+      title='Login'
+      description='Login Page para usuarios registrados'
+      isOnLogin={true}
+    >
       <Flex
         alignItems='center'
         justifyContent='center'
@@ -38,7 +70,7 @@ export default function Login({ roles = [] }) {
           width={'30%'}
           border='1px solid gray'
           flexDirection='column'
-          gap={8}
+          gap={12}
         >
           <Heading
             as='h2'
@@ -51,58 +83,48 @@ export default function Login({ roles = [] }) {
           >
             Log in to HonduFreelance
           </Heading>
-          <FormControl size='lg'>
-            <FormLabel fontSize={15}>Correo Electronico</FormLabel>
-            <InputGroup>
-              <InputLeftElement
-                pointerEvents='none'
-                children={<EmailIcon color='teal.400' size='lg' fontSize={15} />}
-              />
-              <Input
-                color='teal'
-                _placeholder={{ color: 'inherit', fontSize: 15 }}
-                type='email'
-                size='lg'
-                variant='flushed'
-                placeholder='example@example.com'
-              />
-            </InputGroup>
-          </FormControl>
+          <TextFieldIcons
+            id={1} 
+            label='Correo Electrónico'
+            name='email'
+            value={userLog?.email}
+            onChange={handleInputChanges}
+            onRenderIcon={onRenderAccountIcon}
+            placeholder='example@example.com'
+            type='email'
+            color='secondary'
+            focused={true}
+          />
 
-          <FormControl size='lg'>
-            <FormLabel fontSize={15} >Contraseña</FormLabel>
-            <InputGroup>
-              <InputLeftElement
-                pointerEvents='none'
-                children={<LockIcon color='teal.400' size='lg' fontSize={15} />}
-              />
-              <Input
-                color='teal'
-                _placeholder={{ color: 'inherit', fontSize: 15 }}
-                type='password'
-                size='lg'
-                placeholder='************'
-                variant='flushed'
-              />
-            </InputGroup>
-          </FormControl>
-
-          <RadioGroup>
-            <Stack direction='row' justifyContent='center' gap={5} fontSize={15} >
-              <RadioButton roles={roles ?? []} isSelected={isSelected} handleOnSelectOption={handleOnSelectOption} />
-            </Stack>
-          </RadioGroup>
+          <TextFieldIcons
+            id={2} 
+            label='Contraseña'
+            name='password'
+            value={userLog?.password}
+            onChange={handleInputChanges}
+            onRenderIcon={onRenderPasswordIcon}
+            placeholder='********'
+            type='password'
+            color='secondary'
+            focused={true}
+          />
 
           <Button
             borderRadius={15}
+            marginTop={12}
             variant='outline'
             colorScheme='teal'
             display='block'
             size='lg'
             fontSize={15}
+            type='button'
+            onClick={() => handleLogin()}
           >
             <Flex justifyContent='center' alignItems='center'>
-              <ArrowRightIcon alignSelf='center' /> <Text fontSize={15} alignSelf='center' >Log In</Text>
+              <ArrowRightIcon alignSelf='center' />{' '}
+              <Text fontSize={15} alignSelf='center'>
+                Log In
+              </Text>
             </Flex>
           </Button>
 
@@ -127,14 +149,4 @@ export default function Login({ roles = [] }) {
       </Flex>
     </Layout>
   );
-}
-
-export async function getStaticProps() {
-  const response = await fetch(`${enviroment.DEV_BASE_API_URL}/get-all-roles`);
-  const { data = [] } = await response.json();
-  return {
-    props: {
-      roles: data,
-    },
-  };
 }

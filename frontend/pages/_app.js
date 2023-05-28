@@ -8,6 +8,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import theme from '../styles/theme/index';
 import createEmotionCache from '@/config/createEmotionCache';
 import '@/styles/globals.css';
+import { GlobalProvider } from '@/redux/globalProvider';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -24,7 +25,9 @@ export default function MyApp(props) {
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <ChakraProvider>
-          <Component {...pageProps} />
+          <GlobalProvider>
+            <Component {...pageProps} />
+          </GlobalProvider>
         </ChakraProvider>
       </ThemeProvider>
     </CacheProvider>
