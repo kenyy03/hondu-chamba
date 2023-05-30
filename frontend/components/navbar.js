@@ -5,7 +5,11 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 
 export default function Navbar({ isOnLogin = false }) {
-  const { pathname } = useRouter();
+  const router = useRouter();
+
+  const handleNavigateToSignup = () => {
+    router.push('/signup');
+  };
   return (
     <nav className={styles.sticky} >
       <Flex
@@ -22,22 +26,22 @@ export default function Navbar({ isOnLogin = false }) {
           </Link>
           {!isOnLogin && (<>
             <Link href='/' passHref legacyBehavior>
-              <a className={pathname === '/' ? styles['active'] : styles['navbar-link']}>Inicio</a>
+              <a className={router?.pathname === '/' ? styles['active'] : styles['navbar-link']}>Inicio</a>
             </Link>
             <Link href='/findTalent' passHref legacyBehavior>
-              <a className={pathname === '/findTalent' ? styles['active'] : styles['navbar-link']}>Encontrar Talento</a>
+              <a className={router?.pathname === '/findTalent' ? styles['active'] : styles['navbar-link']}>Encontrar Talento</a>
             </Link>
-            <Link href={'/findWork'} passHref legacyBehavior>
-              <a className={pathname === '/findWork' ? styles['active'] : styles['navbar-link']}>Encontrar Trabajo</a>
+            <Link href='/findWork' passHref legacyBehavior>
+              <a className={router?.pathname === '/findWork' ? styles['active'] : styles['navbar-link']}>Encontrar Trabajo</a>
             </Link>
           </>)}
         </Flex>
 
         <Flex gap={12} alignItems='center'>
           <Link href='/login' passHref legacyBehavior>
-            <a className={pathname === '/login' ? styles['active'] : styles['navbar-link']}>Log In</a>
+            <a className={router?.pathname === '/login' ? styles['active'] : styles['navbar-link']}>Log In</a>
           </Link>
-          { !isOnLogin && (<Button colorScheme='teal' size='lg' paddingY={8} borderRadius={12}>
+          {!isOnLogin && (<Button colorScheme='teal' size='lg' paddingY={8} borderRadius={12} onClick={handleNavigateToSignup} >
             <Text fontSize={15} fontWeight={700}>
               Sign Up
             </Text>

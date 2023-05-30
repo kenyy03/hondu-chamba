@@ -1,8 +1,8 @@
-.title-find-work {
+.title-page {
   font-family: var(--fuente-secundaria);
   font-weight: 700;
+  margin-top: 0;
   margin-bottom: 2.5rem;
-  color: #000;
 }
 
 .container-find-work {

@@ -21,7 +21,7 @@ export default function FindWork() {
   return (
     <Layout title='Find Work' description='En esta pagina podras encontrar el trabajo que tanto estas buscando' >
       <main className={styles['container-find-work']}>
-        <h1 className={styles['title-find-work']}>Empleos Disponibles</h1>
+        <h1 className={styles['title-page']}>Empleos Disponibles</h1>
         <section className={styles['container-employes']}>
           <div>
             <h2>Listado de empleos</h2>

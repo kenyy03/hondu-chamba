@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import styles from '../styles/Radio.module.css';
 
 const CustomFormControlLabel = styled(FormControlLabel)({
-  fontSize: props => props.fontSizeLabel ?? '1.5rem',
+  fontSize: props => props.fontsizelabel ?? '1.5rem',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -18,9 +18,9 @@ const CustomFormControlLabel = styled(FormControlLabel)({
 
 export default function RadioButton({
   roles = [],
-  isSelected = false,
+  selectedOption = '',
   handleOnSelectOption = () => {},
-  fontSizeLabel = '1.5rem',
+  fontsizelabel = '1.5rem',
 }) {
   return (
     <>
@@ -32,7 +32,7 @@ export default function RadioButton({
           row
           aria-labelledby='demo-row-radio-buttons-group-label'
           name='row-radio-buttons-group'
-          value={isSelected}
+          value={selectedOption}
           onChange={handleOnSelectOption}
           className={styles['radio-container']}
         >
@@ -44,7 +44,7 @@ export default function RadioButton({
                 control={<Radio />}
                 label={role?.name}
                 disableTypography={false}
-                fontSizeLabel={fontSizeLabel}
+                fontsizelabel={fontsizelabel}
               />
             ))}
         </RadioGroup>
@@ -55,11 +55,14 @@ export default function RadioButton({
 
 RadioButton.propTypes = {
   roles: PropTypes.array.isRequired,
+  selectedOption: PropTypes.string.isRequired,
+  handleOnSelectOption: PropTypes.func.isRequired,
+  fontsizelabel: PropTypes.string,
 };
 
 RadioButton.defaultProps = {
   roles: [],
-  isSelected: false,
+  selectedOption: '',
   handleOnSelectOption: () => {},
-  fontSizeLabel: '1.2rem',
+  fontsizelabel: '1.2rem',
 };

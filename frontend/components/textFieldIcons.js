@@ -13,6 +13,9 @@ export default function TextFieldIcons({
   placeholder = '',
   color = 'primary',
   focused = false,
+  variant = 'standard',
+  fullWidth = false,
+  size = '',
 }) {
   return (
     <>
@@ -25,13 +28,15 @@ export default function TextFieldIcons({
             <InputAdornment position='start'>{onRenderIcon()}</InputAdornment>
           ),
         }}
-        variant='standard'
+        variant={variant}
         name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
         focused={focused}
         color={color}
+        fullWidth={fullWidth}
+        size={size}
       />
     </>
   );
@@ -48,6 +53,9 @@ TextFieldIcons.defaultProps = {
   color: 'primary',
   focused: false,
   id: 0,
+  variant: 'standard',
+  fullWidth: false,
+  size: '',
 };
 
 TextFieldIcons.propTypes = {
@@ -61,6 +69,7 @@ TextFieldIcons.propTypes = {
   placeholder: propTypes.string,
   color: propTypes.string,
   focused: propTypes.bool,
+  variant: propTypes.string,
+  fullWidth: propTypes.bool,
+  size: propTypes.string,
 };
-
-

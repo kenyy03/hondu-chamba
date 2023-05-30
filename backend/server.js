@@ -20,12 +20,12 @@ app.use(express.json());
 app.use(cors())
 require('./config/database.config').connect();
 
-app.use(urlPrefix, authRoutes);
+app.use(urlPrefix, [authRoutes, roleRoutes]);
 
-app.use(urlPrefix,
-  [authToken.veryfyToken],
-  [
-    roleRoutes,
-  ])
+// app.use(urlPrefix,
+//   [authToken.veryfyToken],
+//   [
+//     roleRoutes,
+//   ])
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
