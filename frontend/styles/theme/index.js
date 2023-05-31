@@ -26,6 +26,7 @@ const theme = createTheme({
     fontFamily: roboto.style.fontFamily,
     fontSize: 25,
   },
+  shadows: ['none', '0px 2px 8px rgba(0,0,0,0.32)'],
 });
 
 export default theme;

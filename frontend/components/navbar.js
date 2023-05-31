@@ -3,9 +3,12 @@ import Link from 'next/link';
 import styles from '../styles/Navbar.module.css';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { useSelector } from 'react-redux';
+import AccountMenu from './accountMenu';
 
 export default function Navbar({ isOnLogin = false }) {
   const router = useRouter();
+  const userInfoState = useSelector(state => state.userReducer.userInfo);
 
   const handleNavigateToSignup = () => {
     router.push('/signup');
@@ -38,14 +41,17 @@ export default function Navbar({ isOnLogin = false }) {
         </Flex>
 
         <Flex gap={12} alignItems='center'>
-          <Link href='/login' passHref legacyBehavior>
+          { !userInfoState?.token && (<Link href='/login' passHref legacyBehavior>
             <a className={router?.pathname === '/login' ? styles['active'] : styles['navbar-link']}>Log In</a>
-          </Link>
-          {!isOnLogin && (<Button colorScheme='teal' size='lg' paddingY={8} borderRadius={12} onClick={handleNavigateToSignup} >
+          </Link>)}
+          {!isOnLogin && !userInfoState?.token && (<Button colorScheme='teal' size='lg' paddingY={8} borderRadius={12} onClick={handleNavigateToSignup} >
             <Text fontSize={15} fontWeight={700}>
               Sign Up
             </Text>
           </Button>)}
+          {userInfoState?.token && (
+            <AccountMenu />
+          )}
         </Flex>
       </Flex>
     </nav>

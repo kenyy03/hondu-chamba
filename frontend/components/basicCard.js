@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 export default function BasicCard({ category = { name: '', icons: <div />, totalTalens: 0 } }) {
   return (
     <>
-      <Card sx={{ minWidth: 275 }}>
+      <Card sx={{ minWidth: 275 }} elevation={1} >
         <CardActionArea>
           <CardContent >
             <Typography textAlign='center' > <span>{category?.icons && (category?.icons)}</span> </Typography>

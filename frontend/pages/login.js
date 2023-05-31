@@ -11,8 +11,10 @@ import {
 import { AccountCircle, LockOutlined } from '@mui/icons-material';
 import React, { useState } from 'react';
 import TextFieldIcons from '@/components/textFieldIcons';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setUserInfo } from '@/redux/features/userSlice';
+import { useSnackbar } from 'notistack';
+import { useRouter } from 'next/router';
 
 export default function Login() {
   const [userLog, setUserLog] = useState({
@@ -20,7 +22,8 @@ export default function Login() {
     password: '',
   });
   const dispatch = useDispatch();
-  const userInfoState = useSelector(state => state.userReducer.userInfo);
+  const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
 
   const handleInputChanges = e => {
     setUserLog({
@@ -40,8 +43,14 @@ export default function Login() {
         },
         body: JSON.stringify(userLog),
       });
-      const { data = {} } = await response.json();
+      const { data = {}, message='' } = await response.json();
+      if(!response.ok){
+        enqueueSnackbar(`${response.statusText}: ${message}`, { variant: 'error' });
+        return;
+      }
+      enqueueSnackbar(`${response.statusText}: ${message}`, { variant: 'success' })
       dispatch(setUserInfo(data));
+      router.push('/findTalent');
     } catch (error) {
       console.error(error);
     }

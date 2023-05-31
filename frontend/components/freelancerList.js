@@ -20,10 +20,10 @@ export default function FreelancerList() {
           </div>
           <div className={styles['freelancer-actions']} >
             <Rating name="read-only" value={value} readOnly />
-            <article>
+            <div>
               <button className={styles['freelancer-button']} >Ver Perfil</button>
               <button className={styles['freelancer-button']} >Contratar</button>
-            </article>
+            </div>
           </div>
 
         </div>

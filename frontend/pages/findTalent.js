@@ -1,5 +1,5 @@
 import Layout from '@/components/layout'
-import { Box, Divider } from '@mui/material'
+import { Box } from '@mui/material'
 import styles from '../styles/Freelancer.module.css';
 import SimpleAccordion from '@/components/simpleAccordion';
 import FreelancerList from '@/components/freelancerList';

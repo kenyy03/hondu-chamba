@@ -2,8 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['www.gravatar.com', 'www.google.com', 'cdn.pixabay.com'],
-  }
-}
+    domains: [
+      'www.gravatar.com',
+      'www.google.com',
+      'cdn.pixabay.com',
+      'demos.creative-tim.com',
+      'images.pexels.com',
+    ],
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
