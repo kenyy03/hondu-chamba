@@ -1,22 +1,90 @@
 import TextFieldIcons from '@/components/textFieldIcons';
 import { setUserInfo } from '@/redux/features/userSlice';
 import Image from 'next/image';
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from '../styles/MyAccount.module.css';
 import Layout from '@/components/layout';
+import { useRouter } from 'next/router';
+import { enviroment } from '@/config/enviroment';
+import { enqueueSnackbar } from 'notistack';
 
 export default function MyAccount() {
   const userInfoState = useSelector(state => state.userReducer.userInfo);
+  const [user, setUser] = useState(userInfoState ?? {});
   const dispatch = useDispatch();
+  const router = useRouter();
+
+  useEffect(() => {
+    if(!userInfoState){
+      router.push('/login');
+      return;
+    }
+
+    fetchUserInfo();
+
+  }, []);
+
+  const fetchUserInfo = async () => {
+    try {
+      const url = `${enviroment.DEV_BASE_API_URL}/user-by-id?_id=${userInfoState?._id}`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': userInfoState?.token,
+        },
+      });
+      if (!response.ok) {
+        router.push('/login');
+        dispatch(setUserInfo({}));
+        setUser({})
+        enqueueSnackbar(`${response.statusText}`, { variant: 'error' });
+        return;
+      }
+      const { data = {} } = await response.json();
+      dispatch(setUserInfo(data));
+      setUser(data);
+    } catch (error) {
+      router.push('/login');
+      enqueueSnackbar(`${error}`, { variant: 'error' });
+      dispatch(setUserInfo({}));
+      setUser({})
+    }
+  };
 
   const handleInputChange = e => {
-    dispatch(
-      setUserInfo({
-        ...userInfoState,
+      setUser({
+        ...user,
         [e.target.name]: e.target.value,
-      })
-    );
+      });
+  };
+
+  const handleOnUpdateUser = async (e) => {
+    e.preventDefault();
+    try {
+      const url = `${enviroment.DEV_BASE_API_URL}/update-user`;
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': userInfoState?.token,
+        },
+        body: JSON.stringify(user),
+      });
+      if (!response.ok) {
+        enqueueSnackbar(`${response.statusText}`, { variant: 'error' });
+        return;
+      }
+      const { data = {} } = await response.json();
+      dispatch(setUserInfo(data));
+      setUser(data);
+      enqueueSnackbar(`Usuario actualizado correctamente`, { variant: 'success' });
+    }catch(error){
+      enqueueSnackbar(`${error}`, { variant: 'error' });
+      dispatch(setUserInfo({}));
+      setUser({})
+    }
   };
 
   return (
@@ -37,7 +105,7 @@ export default function MyAccount() {
             <Image
               width={60}
               height={30}
-              alt={`${userInfoState?._id} - ${userInfoState?.names}`}
+              alt={`${user?._id} - ${user?.names}`}
               src={`https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1`}
               loading='lazy'
               className={styles['user-image']}
@@ -45,17 +113,20 @@ export default function MyAccount() {
           </div>
           <div className={styles['user-info']}>
             <h4 className={styles['user-name']}>
-              {userInfoState?.names} {userInfoState?.lastNames}{' '}
+              {user?.names} {user?.lastNames}{' '}
             </h4>
             <p className={styles['user-email']}>
-              <span>{userInfoState.email}</span>
+              <span>{user?.email}</span>
             </p>
             <p className={styles['user-phone']}>
-              <span>{userInfoState?.phone}</span>
+              <span>{user?.phone}</span>
+            </p>
+            <p className={styles['user-phone']}>
+              <span>{user?.ocupation}</span>
             </p>
           </div>
           <hr />
-          <div className={styles['role']}> {userInfoState?.role}</div>
+          <div className={styles['role']}> {user?.role?.name ?? ''}</div>
         </section>
 
         <aside className={styles['edit-profile overflow-auto']}>
@@ -73,7 +144,7 @@ export default function MyAccount() {
                     size='small'
                     variant='outlined'
                     name='names'
-                    value={userInfoState?.names}
+                    value={user?.names}
                     type='text'
                     onChange={handleInputChange}
                     focused={true}
@@ -88,7 +159,7 @@ export default function MyAccount() {
                     size='small'
                     variant='outlined'
                     name='lastNames'
-                    value={userInfoState?.lastNames}
+                    value={user?.lastNames}
                     type='text'
                     onChange={handleInputChange}
                     focused={true}
@@ -102,7 +173,7 @@ export default function MyAccount() {
                     size='small'
                     variant='outlined'
                     name='city'
-                    value={userInfoState?.city}
+                    value={user?.city}
                     type='text'
                     onChange={handleInputChange}
                     focused={true}
@@ -116,7 +187,7 @@ export default function MyAccount() {
                     size='small'
                     variant='outlined'
                     name='phone'
-                    value={userInfoState?.phone}
+                    value={user?.phone}
                     type='text'
                     onChange={handleInputChange}
                     focused={true}
@@ -135,7 +206,7 @@ export default function MyAccount() {
                     size='small'
                     variant='outlined'
                     name='payPerHour'
-                    value={userInfoState?.payPerHour}
+                    value={user?.payPerHour}
                     type='text'
                     onChange={handleInputChange}
                     focused={true}
@@ -149,7 +220,7 @@ export default function MyAccount() {
                     size='small'
                     variant='outlined'
                     name='payPerService'
-                    value={userInfoState?.payPerService}
+                    value={user?.payPerService}
                     type='text'
                     onChange={handleInputChange}
                     focused={true}
@@ -158,7 +229,7 @@ export default function MyAccount() {
                 </div>
               </div>
             </section>
-            <button className={styles['btn-update']}>Actualizar Perfil</button>
+            <button className={styles['btn-update']} onClick={handleOnUpdateUser} >Actualizar Perfil</button>
           </form>
         </aside>
       </main>
