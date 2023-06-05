@@ -7,25 +7,24 @@
   align-items: flex-start;
   gap: 5rem;
   grid-template-columns: 1.5fr 3.5fr;
-  margin: 13.7378rem 15rem;
+  margin: 10.1278rem 15rem;
 }
 
 .title {
   margin: 1.2rem 1rem;
-  font-size: 1.2rem;
+  font-size: 2.2rem;
   font-weight: 500;
   line-height: 1rem;
   color: #9a9a9a;
 }
 
 .user-details {
-  height: 20rem;
+  height: 24.2rem;
   width: 100%;
   padding-bottom: 1rem;
   border-radius: 0.5rem;
   background-color: #fff;
   box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
-
 }
 
 .mb-3 {
@@ -34,7 +33,7 @@
 
 .back-image-container {
   width: 100%;
-  height: 12rem;
+  height: 13.3rem;
   object-fit: cover;
   border-radius: 0.5rem 0.5rem 0 0;
 }
@@ -52,13 +51,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   overflow: hidden;
-  margin-top: -8rem;
+  margin-top: -9rem;
 }
 
 .user-image {
-  width: 8rem;
-  height: 8rem;
+  width: 10rem;
+  height: 10rem;
   object-fit: cover;
   border: 1px solid #fff;
   border-radius: 50%;
@@ -69,17 +69,22 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 1.5rem;
+  margin-top: -4rem;
+  padding: 1.5rem 2.2rem;
   gap: 1rem;
+  border-radius: 1rem;
+  background: rgb(255,255,255);
+  background: -moz-linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(250,250,250,1) 100%);
+  background: -webkit-linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(250,250,250,1) 100%);
+  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(250,250,250,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff",endColorstr="#fafafa",GradientType=1);
 }
 
 .user-name {
-  font-size: 1.2rem;
-  font-weight: 600;
-  line-height: 1.2rem;
+  font-family: var(--fuente-secundaria);
+  font-size: 2.5rem;
   text-transform: capitalize;
   text-align: center;
-  letter-spacing: .1rem;
   margin-bottom: 0;
   color: #51cbce;
 }
@@ -90,29 +95,37 @@
   margin-right: .2rem;
 }
 
+.user-email {
+  display: flex;
+  gap: .3rem;
+  font-family: var(--fuente-terciaria);
+  font-size: 1.7rem;
+  text-align: center;
+  margin-bottom: 0
+}
 .role {
   display: grid;
   place-content: center;
-  font-size: 1rem;
+  font-size: 1.5rem;
   text-transform: uppercase;
   font-weight: 500;
-  line-height: 1.2rem;
   color: #9a9a9a;
 }
 
 .edit-profile {
-  background-color: #fff;
-  border-radius: .5rem;
+  background-color: var(--light-gray);
+  border-radius: 1rem;
   height: auto;
   width: 100%;
-  padding: 1rem;
+  padding: 1.8rem 2rem;
+  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
 }
 
 .title-form {
+  font-family: var(--fuente-terciaria);
   margin-top: 1rem;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 500;
-  line-height: 1rem;
   color: #9a9a9a;
 }
 
@@ -147,14 +160,13 @@
 }
 
 .btn-update {
+  font-family: var(--fuente-terciaria);
   background-color: #51cbce;
   color: #fff;
   border-radius: .5rem;
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.2rem;
+  font-size: 1.5rem;
   text-transform: uppercase;
-  padding: .5rem 1rem;
+  padding: .8rem 1rem;
   border: none;
   cursor: pointer;
   display: block;
@@ -170,3 +182,26 @@
   font-weight: bold;
   font-size: 1.5rem;
 }
+ 
+.nameFile {
+  font-family: var(--fuente-terciaria);
+  font-size: 1.1rem;
+  margin: .2rem 0 0 0;
+}
+.photo-select {
+  margin-top: .7rem;
+  display: inline-block;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.photo-select input[type="file"] {
+  opacity: 0;
+  width: 70px;
+  height: 12px;
+  display: inline-block;
+  position: absolute;
+  top: 7px;
+  left: -24px;
+} 

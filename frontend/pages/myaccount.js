@@ -8,10 +8,16 @@ import Layout from '@/components/layout';
 import { useRouter } from 'next/router';
 import { enviroment } from '@/config/enviroment';
 import { enqueueSnackbar } from 'notistack';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
+import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
+import { IconButton, Tooltip } from '@mui/material';
 
 export default function MyAccount() {
   const userInfoState = useSelector(state => state.userReducer.userInfo);
   const [user, setUser] = useState(userInfoState ?? {});
+  const [photoProfile, setPhotoProfile] = useState({});
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -84,6 +90,52 @@ export default function MyAccount() {
       enqueueSnackbar(`${error}`, { variant: 'error' });
       dispatch(setUserInfo({}));
       setUser({})
+      router.push('/login');
+    }
+  };
+
+  const handleOnSelectPhoto = e => {
+    const file = e.target.files[0]; 
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      setPhotoProfile({
+        url: reader.result,
+        file,
+      });
+    }
+  };
+
+  const handleOnUploadPhoto = async (e) => {
+    e.preventDefault();
+    try{
+      const formData = new FormData();
+      formData.append('imageProfile', photoProfile.file);
+      formData.append('_id', user?._id);
+
+      const response = await fetch(`${enviroment.DEV_BASE_API_URL}/change-image-profile`, {
+        method: 'PUT',
+        headers: {
+          'x-access-token': userInfoState?.token,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        enqueueSnackbar(`${response.statusText}`, { variant: 'error' });
+        return;
+      }
+      const { data = {}, message = '' } = await response.json();
+      dispatch(setUserInfo(data));
+      setUser(data);
+      setPhotoProfile({});
+      enqueueSnackbar(`${message}`, { variant: 'success' });
+    }catch(error){
+      enqueueSnackbar(`${error}`, { variant: 'error' });
+      dispatch(setUserInfo({}));
+      setUser({})
+      setPhotoProfile({});
+      router.push('/login');
     }
   };
 
@@ -103,33 +155,47 @@ export default function MyAccount() {
           </div>
           <div className={styles['user-image-container']}>
             <Image
-              width={60}
-              height={30}
+              width={700}
+              height={600}
               alt={`${user?._id} - ${user?.names}`}
-              src={`https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1`}
+              src={user?.imageProfile?.url}
               loading='lazy'
               className={styles['user-image']}
             />
+            <p className={styles.nameFile} > { photoProfile?.file?.name }</p>
+            
+            <Tooltip title='Cambiar Foto' placement='right-start' >
+              <div className={styles['photo-select']} id='src-photo' >
+                  <PhotoCameraOutlinedIcon color='secondary' />
+                  <input type='file' id='src-photo-input' name='imageProfile' accept='image/*' aria-label="Photo" onChange={handleOnSelectPhoto} />
+              </div>
+            </Tooltip>
           </div>
           <div className={styles['user-info']}>
             <h4 className={styles['user-name']}>
               {user?.names} {user?.lastNames}{' '}
             </h4>
-            <p className={styles['user-email']}>
+            <div className={styles['user-email']}>
+              <EmailOutlinedIcon color='secondary' />
               <span>{user?.email}</span>
-            </p>
-            <p className={styles['user-phone']}>
+            </div>
+            <div className={styles['user-email']}>
+              <LocalPhoneOutlinedIcon color='secondary' />
               <span>{user?.phone}</span>
-            </p>
-            <p className={styles['user-phone']}>
+            </div>
+            <p className={styles['user-email']}>
               <span>{user?.ocupation}</span>
             </p>
-          </div>
-          <hr />
           <div className={styles['role']}> {user?.role?.name ?? ''}</div>
+            <Tooltip title='Cargar Foto' >
+              <IconButton onClick={handleOnUploadPhoto}>
+                <FileUploadOutlinedIcon color='secondary' />
+              </IconButton>
+            </Tooltip>
+          </div>
         </section>
 
-        <aside className={styles['edit-profile overflow-auto']}>
+        <aside className={styles['edit-profile']}>
           <h4 className={styles['title-form']}>Editar Perfil</h4>
           <form>
             <section className={styles['grid-container']}>
@@ -195,37 +261,39 @@ export default function MyAccount() {
                   />
                 </div>
               </div>
-              <div className={styles['Password']}>
-                <div className=''>
-                  <h4 className={`${styles['title-form']} ${styles['mb-3']} `}>Cuota Pago</h4>
-                </div>
-                <div className={styles['mb-3']} >
-                  <TextFieldIcons
-                    id={5}
-                    label='Pago por hora'
-                    size='small'
-                    variant='outlined'
-                    name='payPerHour'
-                    value={user?.payPerHour}
-                    type='text'
-                    onChange={handleInputChange}
-                    focused={true}
-                    color='secondary'
-                  />
-                </div>
-                <div className={styles['mb-3']} >
-                  <TextFieldIcons
-                    id={6}
-                    label='Pago por Servicio'
-                    size='small'
-                    variant='outlined'
-                    name='payPerService'
-                    value={user?.payPerService}
-                    type='text'
-                    onChange={handleInputChange}
-                    focused={true}
-                    color='secondary'
-                  />
+              <div className={styles['align-center']} >
+                <div className={styles['Password']}>
+                  <div className=''>
+                    <h4 className={`${styles['title-form']} ${styles['mb-3']} `}>Cuota Pago</h4>
+                  </div>
+                  <div className={styles['mb-3']} >
+                    <TextFieldIcons
+                      id={5}
+                      label='Pago por hora'
+                      size='small'
+                      variant='outlined'
+                      name='payPerHour'
+                      value={user?.payPerHour}
+                      type='text'
+                      onChange={handleInputChange}
+                      focused={true}
+                      color='secondary'
+                    />
+                  </div>
+                  <div className={styles['mb-3']} >
+                    <TextFieldIcons
+                      id={6}
+                      label='Pago por Servicio'
+                      size='small'
+                      variant='outlined'
+                      name='payPerService'
+                      value={user?.payPerService}
+                      type='text'
+                      onChange={handleInputChange}
+                      focused={true}
+                      color='secondary'
+                    />
+                  </div>
                 </div>
               </div>
             </section>

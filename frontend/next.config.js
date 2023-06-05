@@ -8,6 +8,7 @@ const nextConfig = {
       'cdn.pixabay.com',
       'demos.creative-tim.com',
       'images.pexels.com',
+      'res.cloudinary.com',
     ],
   },
 };
