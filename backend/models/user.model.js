@@ -11,9 +11,18 @@ const userSchema = new mongoose.Schema(
     role: { type: ObjectId, ref: 'roles', default: null },
     ocupation: { type: String, required: true },
     city: { type: String, default: '' },
-    imageProfileURL: { type: String, default: '' },
+    imageProfile: { 
+      publicId: { type: String, default: '' },
+      url: { type: String, default: '' }
+     },
     payPerHour: { type: Number, default: 0 },
     payPerService: { type: Number, default: 0 },
+    rating: { type: Number, default: 0 },
+    hoursWorked: { type: Number, default: 0 },
+    servicesDone: { type: Number, default: 0 },
+    servicesCanceled: { type: Number, default: 0 },
+    servicesCanceledByClient: { type: Number, default: 0 },
+    habilities: { type: Array, default: [] },
   },
   {
     timestamps: {

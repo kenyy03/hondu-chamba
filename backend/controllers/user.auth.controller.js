@@ -2,6 +2,7 @@ const Helper = require('../helpers/index');
 const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
 const auth = require('../middlewares/verify.jwt.middleware');
+const cloudinary = require('../config/cloudinary.config');
 
 exports.signUp = async (req, res) => {
   try {
@@ -70,12 +71,11 @@ exports.getUserById = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-  const { names, lastNames, imageProfileURL, payPerHour, payPerService, city, ocupation, role, phone, _id } = req.body;
+  const { names, lastNames, payPerHour, payPerService, city, ocupation, phone, _id } = req.body;
   try{
     let userToUpdate = {
       ...( !Helper.isNullOrWhiteSpace(names) && { names } ),
       ...( !Helper.isNullOrWhiteSpace(lastNames) && { lastNames } ),
-      ...( !Helper.isNullOrWhiteSpace(imageProfileURL) && { imageProfileURL } ),
       ...( !Helper.isNullOrWhiteSpace(payPerHour) && { payPerHour } ),
       ...( !Helper.isNullOrWhiteSpace(payPerService) && { payPerService } ),
       ...( !Helper.isNullOrWhiteSpace(city) && { city } ),
@@ -97,3 +97,42 @@ exports.updateUser = async (req, res) => {
     });
   }
 };
+
+exports.changeImageProfile = async (req, res) => {
+  const files = req.files;
+  try{
+    if(!files?.imageProfile){
+      res.status(400).json({ message: 'No image provided' });
+      return;
+    }
+    const { _id } = req.body;
+    if(Helper.isNullOrWhiteSpace(_id)){
+      res.status(400).json({ message: 'No user id provided' });
+      return;
+    }
+    
+    const responseCloudinary = await cloudinary.uploadImage(files?.imageProfile?.tempFilePath, 'users', _id); 
+    if(!Helper.isFullObject(responseCloudinary)){
+      res.status(500).json({ message: 'Something goes wrong uploading the image on cloudinary' });
+      return;
+    }
+
+    const imageProfile = {
+      publicId: responseCloudinary.public_id,
+      url: responseCloudinary.secure_url
+    }
+    const userUpdated = await User.findByIdAndUpdate(_id, {imageProfile}, {new: true}).populate('role');
+    if(!userUpdated){
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+    const token = auth.createToken(userUpdated?._id, userUpdated?.email);
+    const userResponse = {...userUpdated._doc, token, password: undefined} 
+    
+    res.status(200).json({ message: 'User image profile updated', data: userResponse });
+  }catch(error){
+    res.status(500).json({
+      message: error.message || 'Something goes wrong updating the user',
+    });
+  }
+}
