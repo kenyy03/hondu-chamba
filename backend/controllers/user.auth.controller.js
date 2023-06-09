@@ -136,3 +136,47 @@ exports.changeImageProfile = async (req, res) => {
     });
   }
 }
+
+exports.publicProfile = async (req, res) => {
+  try{
+    const { _id, isPublicProfile } = req.body;
+    if(Helper.isNullOrWhiteSpace(_id)){
+      res.status(400).json({ message: 'No user id provided' });
+      return;
+    }
+    const userUpdated = await User.findByIdAndUpdate(_id, {isPublicProfile}, {new: true}).populate('role');
+    if(!userUpdated){
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+    const token = auth.createToken(userUpdated?._id, userUpdated?.email);
+    const userResponse = {...userUpdated._doc, token, password: undefined} 
+    
+    res.status(200).json({ message: 'User public profile updated', data: userResponse });
+
+  }catch(error){
+    res.status(500).json({
+      message: error.message || 'Something goes wrong updating the user',
+    });
+  }
+};
+
+exports.getUsersByIsPublicProfile = async (req, res) => {
+  try{
+    const users = await User.find({isPublicProfile: true}).populate('role');
+    if(!users){
+      res.status(404).json({ message: 'Users not found' });
+      return;
+    }
+    const usersResponse = users.map(user => {
+      const token = auth.createToken(user?._id, user?.email);
+      const userResponse = {...user._doc, token, password: undefined} 
+      return userResponse;
+    })
+    res.status(200).json({ message: 'Users found', data: usersResponse });
+  }catch(error){
+    res.status(500).json({
+      message: error.message || 'Something goes wrong getting the users',
+    });
+  }
+};

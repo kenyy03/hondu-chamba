@@ -13,4 +13,9 @@ app.get('/user-by-id', [verifyJwt.veryfyToken], authController.getUserById);
 app.put('/update-user', [verifyJwt.veryfyToken], authController.updateUser);
 
 app.put('/change-image-profile', [verifyJwt.veryfyToken], authController.changeImageProfile);
+
+app.put('/public-profile', [verifyJwt.veryfyToken], authController.publicProfile);
+
+app.get('/get-users-by-is-public-profile', [verifyJwt.veryfyToken], authController.getUsersByIsPublicProfile);
+
 module.exports = app;
