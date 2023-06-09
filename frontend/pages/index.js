@@ -13,10 +13,31 @@ import {
   StorefrontOutlined,
 } from '@mui/icons-material';
 import BasicCard from '@/components/basicCard';
+import { enviroment } from '@/config/enviroment';
+import { categoriesIcons } from '@/config/helpers/constants';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { setCategories } from '@/redux/features/categorySlice';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export default function Home() {
+export default function Home({ categories = []}) {
+  const [categoriesIconsState, setCategoriesIconsState] = useState(categories);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const categoriesMap = categories?.map((category) => ({
+      ...category,
+      icons: categoriesIcons()[category?.name] ?? <div />,
+    }));
+
+    setCategoriesIconsState(categoriesMap);
+    const categoriesFontSize25 = categories?.map((category) => ({
+      ...category,
+      icons: categoriesIcons(25)[category?.name] ?? <div />,
+    }));
+    dispatch(setCategories(categoriesFontSize25))
+  }, []);
   return (
     <Layout title='Home' description='Profesionales Autónomos'>
       <section className={styles.hero}>
@@ -58,14 +79,37 @@ export default function Home() {
           Encuentra talento por categoria
         </h1>
         <Flex wrap='wrap' justifyContent='space-between' gap={9} >
-          {catergories().map((category) => (
-            <BasicCard key={category?.id}  category={category} />
+          {categoriesIconsState?.map((category) => (
+            <BasicCard key={category?._id}  category={category} />
           ))}
         </Flex>
       </section>
     </Layout>
   );
 }
+
+export async function getStaticProps() {
+  const url = `${enviroment.DEV_BASE_API_URL}/get-all-categories`;
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok)
+      throw new Error(`${response.statusText}: Error al obtener los roles`);
+    const { data = [] } = await response.json();
+  
+    return {
+      props: {
+        categories: data,
+      },
+    };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 export const catergories =(fontSize = 50) => [
   {

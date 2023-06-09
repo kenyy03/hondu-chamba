@@ -121,12 +121,26 @@
   box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
 }
 
+.header-grid {
+  display: grid;
+  justify-content: space-around;
+  grid-template-columns: 1fr 1fr;
+  padding: 0 1.5rem;
+  gap: 2rem;
+}
+
 .title-form {
   font-family: var(--fuente-terciaria);
-  margin-top: 1rem;
+  margin-top: 0rem;
   font-size: 1.5rem;
   font-weight: 500;
   color: #9a9a9a;
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .name-container {

@@ -12,12 +12,13 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
-import { IconButton, Tooltip } from '@mui/material';
+import { FormControlLabel, IconButton, Switch, Tooltip } from '@mui/material';
 
 export default function MyAccount() {
   const userInfoState = useSelector(state => state.userReducer.userInfo);
   const [user, setUser] = useState(userInfoState ?? {});
   const [photoProfile, setPhotoProfile] = useState({});
+  const [isPublicProfile, setIsPublicProfile] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -139,6 +140,46 @@ export default function MyAccount() {
     }
   };
 
+  const handleOnChangePublicProfile = (e) => {
+    setIsPublicProfile(e.target.checked);
+    handleOnUpdatePublicProfile(e.target.checked);
+  }
+
+  const handleOnUpdatePublicProfile = async (checked) => {
+    try{
+
+      const url = `${enviroment.DEV_BASE_API_URL}/public-profile`;
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': userInfoState?.token,
+        },
+        body: JSON.stringify({
+          _id: user?._id,
+          isPublicProfile: checked,
+        }),
+      });
+
+      if (!response.ok) {
+        enqueueSnackbar(`${response.statusText}`, { variant: 'error' });
+        return;
+      }
+
+      const { data = {}, message = '' } = await response.json();
+      dispatch(setUserInfo(data));
+      setUser(data);
+      enqueueSnackbar(`${message}`, { variant: 'success' });
+
+    }catch(error){
+      enqueueSnackbar(`${error}`, { variant: 'error' });
+      dispatch(setUserInfo({}));
+      setUser({})
+      setPhotoProfile({});
+      router.push('/login');
+    }
+  };
+
   return (
     <Layout title='Profile Page' description=' ' >
       <main className={styles.content} >
@@ -196,7 +237,17 @@ export default function MyAccount() {
         </section>
 
         <aside className={styles['edit-profile']}>
-          <h4 className={styles['title-form']}>Editar Perfil</h4>
+          <header  className={styles['header-grid']} >
+            <h4 className={styles['title-form']}>Editar Perfil</h4>
+            <div className={styles.switch} >
+              <Switch 
+                checked={isPublicProfile} 
+                onChange={handleOnChangePublicProfile}
+                inputProps={{ 'aria-label': 'controlled' }} 
+              />
+              <h4 className={styles['title-form']} >Publicar Perfil</h4>
+            </div>
+          </header>
           <form>
             <section className={styles['grid-container']}>
               <div className={styles['align-center']} >
