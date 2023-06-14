@@ -9,14 +9,13 @@ const fileUpload = require('express-fileupload');
 const roleRoutes = require('./routes/role.routes');
 const authRoutes = require('./routes/user.auth.routes');
 const categoryRoutes = require('./routes/category.routes');
+const habilityRoutes = require('./routes/hability.routes');
 
 const app = express();
 const port = config.PORT || 5000;
 const urlPrefix = config.URL_PREFIX || '/api/v1';
 
 // Middlewares
-const authToken = require('./middlewares/verify.jwt.middleware');
-
 app.use(express.urlencoded({ extended: true, limit: '100bm' }));
 app.use(express.json(limit = '100bm'));
 app.use(cors({origin: ['http://localhost:3000', 'http://127.0.0.1:3000']}))
@@ -26,6 +25,6 @@ app.use(fileUpload({
 }))
 require('./config/database.config').connect();
 
-app.use(urlPrefix, [authRoutes, roleRoutes, categoryRoutes]);
+app.use(urlPrefix, [authRoutes, roleRoutes, categoryRoutes, habilityRoutes]);
 
 app.listen(port, () => console.log(`Server running on port ${port}`));

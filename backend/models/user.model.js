@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
     servicesDone: { type: Number, default: 0 },
     servicesCanceled: { type: Number, default: 0 },
     servicesCanceledByClient: { type: Number, default: 0 },
-    habilities: { type: Array, default: [] },
+    habilities: { type: Array, default: [], ref: 'habilities' },
     isPublicProfile: { type: Boolean, default: false },
   },
   {

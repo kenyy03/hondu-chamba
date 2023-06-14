@@ -33,7 +33,10 @@ exports.signUp = async (req, res) => {
 exports.logIn = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const username = await User.findOne({ email });
+    const username = await User.findOne({ email })
+      .populate('role')
+      .populate('habilities');
+
     const credentialsValid =
       username && (await bcrypt.compare(password, username?.password));
     if (!credentialsValid) {
@@ -53,7 +56,10 @@ exports.logIn = async (req, res) => {
 exports.getUserById = async (req, res) => {
   const { _id } = req.query;
   try{
-    const user = await User.findById({_id}).populate('role');
+    const user = await User.findById({_id})
+      .populate('role')
+      .populate('habilities');
+    
     if(!user){
       res.status(404).json({ message: 'User not found' });
       return;
@@ -71,7 +77,7 @@ exports.getUserById = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-  const { names, lastNames, payPerHour, payPerService, city, ocupation, phone, _id } = req.body;
+  const { names, lastNames, payPerHour, payPerService, city, ocupation, phone, _id, habilities } = req.body;
   try{
     let userToUpdate = {
       ...( !Helper.isNullOrWhiteSpace(names) && { names } ),
@@ -81,8 +87,12 @@ exports.updateUser = async (req, res) => {
       ...( !Helper.isNullOrWhiteSpace(city) && { city } ),
       ...( !Helper.isNullOrWhiteSpace(ocupation) && { ocupation } ),
       ...( !Helper.isNullOrWhiteSpace(phone) && { phone } ),
+      ...( Helper.isFullArray(habilities) && { habilities } ),
     }
-    const response = await User.findByIdAndUpdate(_id, userToUpdate, {new: true}).populate('role');
+    const response = await User.findByIdAndUpdate(_id, userToUpdate, {new: true})
+      .populate('role')
+      .populate('habilities');
+
     if(!response){
       res.status(404).json({ message: 'User not found' });
       return;
@@ -121,7 +131,10 @@ exports.changeImageProfile = async (req, res) => {
       publicId: responseCloudinary.public_id,
       url: responseCloudinary.secure_url
     }
-    const userUpdated = await User.findByIdAndUpdate(_id, {imageProfile}, {new: true}).populate('role');
+    const userUpdated = await User.findByIdAndUpdate(_id, {imageProfile}, {new: true})
+      .populate('role')
+      .populate('habilities');
+    
     if(!userUpdated){
       res.status(404).json({ message: 'User not found' });
       return;
@@ -144,7 +157,10 @@ exports.publicProfile = async (req, res) => {
       res.status(400).json({ message: 'No user id provided' });
       return;
     }
-    const userUpdated = await User.findByIdAndUpdate(_id, {isPublicProfile}, {new: true}).populate('role');
+    const userUpdated = await User.findByIdAndUpdate(_id, {isPublicProfile}, {new: true})
+      .populate('role')
+      .populate('habilities');
+    
     if(!userUpdated){
       res.status(404).json({ message: 'User not found' });
       return;
@@ -163,7 +179,10 @@ exports.publicProfile = async (req, res) => {
 
 exports.getUsersByIsPublicProfile = async (req, res) => {
   try{
-    const users = await User.find({isPublicProfile: true}).populate('role');
+    const users = await User.find({isPublicProfile: true})
+      .populate('role')
+      .populate('habilities');
+
     if(!users){
       res.status(404).json({ message: 'Users not found' });
       return;
