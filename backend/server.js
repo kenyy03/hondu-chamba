@@ -10,6 +10,7 @@ const roleRoutes = require('./routes/role.routes');
 const authRoutes = require('./routes/user.auth.routes');
 const categoryRoutes = require('./routes/category.routes');
 const habilityRoutes = require('./routes/hability.routes');
+const jobsRoutes = require('./routes/jobs.routes');
 
 const app = express();
 const port = config.PORT || 5000;
@@ -25,6 +26,12 @@ app.use(fileUpload({
 }))
 require('./config/database.config').connect();
 
-app.use(urlPrefix, [authRoutes, roleRoutes, categoryRoutes, habilityRoutes]);
+app.use(urlPrefix, [
+  authRoutes,
+  roleRoutes,
+  categoryRoutes,
+  habilityRoutes,
+  jobsRoutes,
+]);
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
