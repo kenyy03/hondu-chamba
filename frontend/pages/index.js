@@ -27,7 +27,7 @@ const Container = styled.section((props) => ({
   height: '550px',
 })); 
 
-export default function Home({ categories = []}) {
+export default function Home({ categories = [], habilities = []}) {
   const [categoriesIconsState, setCategoriesIconsState] = useState(categories);
   const userInfoState = useSelector(state => state.userReducer.userInfo);
   const dispatch = useDispatch();
@@ -97,20 +97,30 @@ export default function Home({ categories = []}) {
 
 export async function getStaticProps() {
   const url = `${enviroment.DEV_BASE_API_URL}/get-all-categories`;
+  const urlHabilities = `${enviroment.DEV_BASE_API_URL}/get-habilities`;
   try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (!response.ok)
+    const [responseCategories, reponseHabilities] = await Promise.all([
+      fetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', },
+      }),
+      fetch(urlHabilities, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', },
+      }),
+      
+    ]);
+
+    if (!responseCategories.ok || !reponseHabilities.ok)
       throw new Error(`${response.statusText}: Error al obtener los roles`);
-    const { data = [] } = await response.json();
+    
+    const [{ data:categories = [] }, { data:habilities = [] } ] = 
+      await Promise.all( [responseCategories.json(), reponseHabilities.json()]);
   
     return {
       props: {
-        categories: data,
+        categories,
+        habilities,
       },
     };
   } catch (error) {
