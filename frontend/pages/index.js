@@ -2,16 +2,6 @@ import { Inter } from 'next/font/google';
 import Layout from '@/components/layout';
 import styles from '../styles/Grid.module.css';
 import { Button, Flex, Text } from '@chakra-ui/react';
-import {
-  Code,
-  SchoolOutlined,
-  SportsEsports,
-  HouseSidingOutlined,
-  Face2,
-  Brush,
-  ScaleOutlined,
-  StorefrontOutlined,
-} from '@mui/icons-material';
 import BasicCard from '@/components/basicCard';
 import { enviroment } from '@/config/enviroment';
 import { categoriesIcons } from '@/config/helpers/constants';
@@ -19,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCategories } from '@/redux/features/categorySlice';
 import styled from '@emotion/styled';
+import { setHabilities } from '@/redux/features/habilitiesSlice';
 
 const inter = Inter({ subsets: ['latin'] });
 const Container = styled.section((props) => ({
@@ -43,7 +34,9 @@ export default function Home({ categories = [], habilities = []}) {
       ...category,
       icons: categoriesIcons(25)[category?.name] ?? <div />,
     }));
-    dispatch(setCategories(categoriesFontSize25))
+    
+    dispatch(setCategories(categoriesFontSize25));
+    dispatch(setHabilities(habilities))
   }, []);
   return (
     <Layout title='Home' description='Profesionales Autónomos'>

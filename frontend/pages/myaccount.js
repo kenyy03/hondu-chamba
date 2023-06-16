@@ -26,9 +26,10 @@ const Container = styled.main((props) =>({
 
 export default function MyAccount() {
   const userInfoState = useSelector(state => state.userReducer.userInfo);
+  const habilitiesState = useSelector(state => state.habilitiesReducer.habilities)
   const [user, setUser] = useState(userInfoState ?? {});
   const [photoProfile, setPhotoProfile] = useState({});
-  const [habilities, setHabilities] = useState([]);
+  const [habilities, ] = useState(habilitiesState ?? []);
   const [selectedHabilities, setSelectedHabilities] = useState(
     userInfoState?.habilities ?? []
   );
@@ -45,7 +46,6 @@ export default function MyAccount() {
     }
 
     fetchUserInfo();
-    fetchHabilities();
   }, []);
 
   const fetchUserInfo = async () => {
@@ -76,29 +76,6 @@ export default function MyAccount() {
     }
   };
 
-  const fetchHabilities = async () => {
-    try {
-      const url = `${enviroment.DEV_BASE_API_URL}/get-habilities`;
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!response.ok) {
-        enqueueSnackbar(`${response.statusText}`, { variant: 'error' });
-        return;
-      }
-      const { data = [] } = await response.json();
-      setHabilities(data);
-    } catch (error) {
-      router.push('/login');
-      enqueueSnackbar(`${error}`, { variant: 'error' });
-      dispatch(setUserInfo({}));
-      setUser({});
-    }
-  };
-
   const handleInputChange = e => {
     setUser({
       ...user,
@@ -112,7 +89,6 @@ export default function MyAccount() {
       const url = `${enviroment.DEV_BASE_API_URL}/update-user`;
       const newHabilites = selectedHabilities.map(({ _id }) => _id);
       const userToUpdate = structuredClone(user);
-      debugger;
       userToUpdate.habilities = newHabilites;
 
       const response = await fetch(url, {
