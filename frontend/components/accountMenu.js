@@ -16,6 +16,7 @@ export default function AccountMenu() {
   const router = useRouter();
 
   const handleLogout = () => {
+    router.push('/');
     dispatch(setUserInfo({}));
   }
 

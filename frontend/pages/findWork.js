@@ -12,15 +12,177 @@ import {
   Typography,
 } from '@mui/material';
 import Image from 'next/image';
+import styled from '@emotion/styled';
+import { useSelector } from 'react-redux';
+import TextFieldIcons from '@/components/textFieldIcons';
+import MultilineTextField from '@/components/multilineTextField';
+import { enqueueSnackbar } from 'notistack';
+import { enviroment } from '@/config/enviroment';
+
+const Container = styled.main( props => ({
+  margin: props.roleName === 'Recruiter' ? '5rem 15rem' : '10rem 15rem'
+}) );
+
+const ContainerForm = styled.div(props => ({
+  padding: '1rem',
+  borderRadius: '1rem',
+  border: '1px solid #ccc',
+}));
+
+const CustomForm = styled.form(props => ({
+  display: 'flex',
+  flexWrap: 'wrap',
+  flexDirection: 'column',
+  gap: '2rem',
+  padding: '1.2rem',
+}));
+
+const SectionFields = styled.section(props => ({
+  display: 'flex',
+  flexDirection: 'row',
+  gap: '1.2rem',
+  justifyContent: 'center',
+  alignItems: 'center',
+}));
 
 export default function FindWork() {
+  const userInfoState = useSelector(state => state.userReducer.userInfo);
   const [selectedEmploye, setSelectedEmploye] = useState(
     employes?.find(f => f.id === 1)
   );
+  const [showModal, setShowModal] = useState(false);
+  const [employesDetails, setEmployesDetails] = useState({});
+  const [jobs, setJobs] = useState([]);
+
+  const onShowModal = () => {
+    setShowModal(true);
+  };
+
+  const onCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleInputChangeNewEmploye = e => {
+    const { name, value } = e.target;
+    setEmployesDetails(prevState => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleCreateNewJob = async e => {
+    try{
+      const { jobName='', jobType='', requirements=[], description='' } = employesDetails;
+      e.preventDefault();
+      const url = `${enviroment.DEV_BASE_API_URL}/create-job`;
+      const newJob = {
+        nameEmployer: `${userInfoState?.names} ${userInfoState?.lastNames}`,
+        jobName,
+        jobType,
+        imageCompany: userInfoState?.imageProfile?.url,
+        description: description,
+        requirements: requirements?.split('.')?.map(requirement => requirement.trim()).filter(requirement => requirement !== ''),
+      };
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': `${userInfoState?.token}`
+        },
+        body: JSON.stringify(newJob),
+      });
+
+      if(!response.ok){
+        enqueueSnackbar(`Error al crear la plaza: ${response?.statusText}`, {variant: 'error'});
+        return;
+      }
+      const { data = {}, message= ''} = await response.json();
+
+      const jobsUpdated = [...jobs, data];
+      setJobs(jobsUpdated);
+      enqueueSnackbar(`${message}`, {variant: 'success'});
+    }catch(error){
+      enqueueSnackbar(`Error al crear la plaza: ${error?.message}`, {variant: 'error'});
+    }
+  };
+
+  const onRenderContentModal = () => {
+
+    return (
+      <>
+        <h2 style={{textAlign: 'center'}} >Crear nueva plaza</h2>
+        <ContainerForm>
+          <CustomForm>
+            <SectionFields >
+              <TextFieldIcons 
+                id={1}
+                label='Nombre de la vacante'
+                value={employesDetails?.jobName}
+                name='jobName'
+                onChange={handleInputChangeNewEmploye}
+                type='text'
+                color='secondary'
+                size='small'
+                variant='outlined'
+                focused={true}
+              />
+              <TextFieldIcons 
+                id={2}
+                label='Tipo de plaza'
+                value={employesDetails?.jobType}
+                name='jobType'
+                onChange={handleInputChangeNewEmploye}
+                type='text'
+                color='secondary'
+                size='small'
+                variant='outlined'
+                focused={true}
+              />
+              
+            </SectionFields>
+            <SectionFields >
+              <MultilineTextField 
+                id={3}
+                label='Requisitos'
+                value={employesDetails?.requirements}
+                name='requirements'
+                onChange={handleInputChangeNewEmploye}
+                helperText='Termina cada requerimiento con un punto (.)'
+                fullWidth={true}
+              />
+            </SectionFields>
+            <SectionFields >
+              <MultilineTextField 
+                id={4}
+                label='Descripcion de la plaza'
+                value={employesDetails?.description}
+                name='description'
+                onChange={handleInputChangeNewEmploye}
+                helperText='Agrega la descripcion como parrafo'
+                fullWidth={true}  
+              />
+            </SectionFields>
+          </CustomForm>
+          <div style={{display: 'flex', justifyContent:'center', alignItems:'center', marginTop: '1rem', marginBottom: '1rem'}} >
+            <Button variant="outlined" color='secondary' onClick={handleCreateNewJob} >Guardar</Button>
+          </div>
+        </ContainerForm>
+      </>
+    )
+  };
+
 
   return (
-    <Layout title='Find Work' description='En esta pagina podras encontrar el trabajo que tanto estas buscando' >
-      <main className={styles['container-find-work']}>
+    <Layout 
+      title='Find Work' 
+      description='En esta pagina podras encontrar el trabajo que tanto estas buscando' 
+      showModal={showModal}
+      onShowModal={onShowModal}
+      onCloseModal={onCloseModal} 
+      onRenderContentModal={onRenderContentModal}
+    >
+      <Container roleName={userInfoState?.role?.name}  >
         <h1 className={styles['title-page']}>Empleos Disponibles</h1>
         <section className={styles['container-employes']}>
           <div>
@@ -98,7 +260,7 @@ export default function FindWork() {
             </article>
           </div>
         </section>
-      </main>
+      </Container>
     </Layout>
   );
 }

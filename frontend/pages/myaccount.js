@@ -12,24 +12,40 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined';
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
-import { FormControlLabel, IconButton, Switch, Tooltip } from '@mui/material';
+import { IconButton, Switch, Tooltip } from '@mui/material';
+import HabilitiesAutocomplete from '@/components/habilitiesAutocomplete';
+import styled from '@emotion/styled';
+
+const Container = styled.main((props) =>({
+  display: 'grid',
+  alignItems: 'flex-start',
+  gap: '5rem',
+  gridTemplateColumns: '1.5fr 3.5fr',
+  margin: props.roleName === 'Recruiter' ? '5.1278rem 15rem' : '10.1278rem 15rem',
+}) );
 
 export default function MyAccount() {
   const userInfoState = useSelector(state => state.userReducer.userInfo);
   const [user, setUser] = useState(userInfoState ?? {});
   const [photoProfile, setPhotoProfile] = useState({});
-  const [isPublicProfile, setIsPublicProfile] = useState(false);
+  const [habilities, setHabilities] = useState([]);
+  const [selectedHabilities, setSelectedHabilities] = useState(
+    userInfoState?.habilities ?? []
+  );
+  const [isPublicProfile, setIsPublicProfile] = useState(
+    userInfoState?.isPublicProfile ?? false
+  );
   const dispatch = useDispatch();
   const router = useRouter();
 
   useEffect(() => {
-    if(!userInfoState){
+    if (!userInfoState) {
       router.push('/login');
       return;
     }
 
     fetchUserInfo();
-
+    fetchHabilities();
   }, []);
 
   const fetchUserInfo = async () => {
@@ -45,7 +61,7 @@ export default function MyAccount() {
       if (!response.ok) {
         router.push('/login');
         dispatch(setUserInfo({}));
-        setUser({})
+        setUser({});
         enqueueSnackbar(`${response.statusText}`, { variant: 'error' });
         return;
       }
@@ -56,28 +72,56 @@ export default function MyAccount() {
       router.push('/login');
       enqueueSnackbar(`${error}`, { variant: 'error' });
       dispatch(setUserInfo({}));
-      setUser({})
+      setUser({});
+    }
+  };
+
+  const fetchHabilities = async () => {
+    try {
+      const url = `${enviroment.DEV_BASE_API_URL}/get-habilities`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        enqueueSnackbar(`${response.statusText}`, { variant: 'error' });
+        return;
+      }
+      const { data = [] } = await response.json();
+      setHabilities(data);
+    } catch (error) {
+      router.push('/login');
+      enqueueSnackbar(`${error}`, { variant: 'error' });
+      dispatch(setUserInfo({}));
+      setUser({});
     }
   };
 
   const handleInputChange = e => {
-      setUser({
-        ...user,
-        [e.target.name]: e.target.value,
-      });
+    setUser({
+      ...user,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleOnUpdateUser = async (e) => {
+  const handleOnUpdateUser = async e => {
     e.preventDefault();
     try {
       const url = `${enviroment.DEV_BASE_API_URL}/update-user`;
+      const newHabilites = selectedHabilities.map(({ _id }) => _id);
+      const userToUpdate = structuredClone(user);
+      debugger;
+      userToUpdate.habilities = newHabilites;
+
       const response = await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'x-access-token': userInfoState?.token,
         },
-        body: JSON.stringify(user),
+        body: JSON.stringify(userToUpdate),
       });
       if (!response.ok) {
         enqueueSnackbar(`${response.statusText}`, { variant: 'error' });
@@ -86,17 +130,19 @@ export default function MyAccount() {
       const { data = {} } = await response.json();
       dispatch(setUserInfo(data));
       setUser(data);
-      enqueueSnackbar(`Usuario actualizado correctamente`, { variant: 'success' });
-    }catch(error){
+      enqueueSnackbar(`Usuario actualizado correctamente`, {
+        variant: 'success',
+      });
+    } catch (error) {
       enqueueSnackbar(`${error}`, { variant: 'error' });
       dispatch(setUserInfo({}));
-      setUser({})
+      setUser({});
       router.push('/login');
     }
   };
 
   const handleOnSelectPhoto = e => {
-    const file = e.target.files[0]; 
+    const file = e.target.files[0];
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
@@ -104,23 +150,26 @@ export default function MyAccount() {
         url: reader.result,
         file,
       });
-    }
+    };
   };
 
-  const handleOnUploadPhoto = async (e) => {
+  const handleOnUploadPhoto = async e => {
     e.preventDefault();
-    try{
+    try {
       const formData = new FormData();
       formData.append('imageProfile', photoProfile.file);
       formData.append('_id', user?._id);
 
-      const response = await fetch(`${enviroment.DEV_BASE_API_URL}/change-image-profile`, {
-        method: 'PUT',
-        headers: {
-          'x-access-token': userInfoState?.token,
-        },
-        body: formData,
-      });
+      const response = await fetch(
+        `${enviroment.DEV_BASE_API_URL}/change-image-profile`,
+        {
+          method: 'PUT',
+          headers: {
+            'x-access-token': userInfoState?.token,
+          },
+          body: formData,
+        }
+      );
 
       if (!response.ok) {
         enqueueSnackbar(`${response.statusText}`, { variant: 'error' });
@@ -131,23 +180,22 @@ export default function MyAccount() {
       setUser(data);
       setPhotoProfile({});
       enqueueSnackbar(`${message}`, { variant: 'success' });
-    }catch(error){
+    } catch (error) {
       enqueueSnackbar(`${error}`, { variant: 'error' });
       dispatch(setUserInfo({}));
-      setUser({})
+      setUser({});
       setPhotoProfile({});
       router.push('/login');
     }
   };
 
-  const handleOnChangePublicProfile = (e) => {
+  const handleOnChangePublicProfile = e => {
     setIsPublicProfile(e.target.checked);
     handleOnUpdatePublicProfile(e.target.checked);
-  }
+  };
 
-  const handleOnUpdatePublicProfile = async (checked) => {
-    try{
-
+  const handleOnUpdatePublicProfile = async checked => {
+    try {
       const url = `${enviroment.DEV_BASE_API_URL}/public-profile`;
       const response = await fetch(url, {
         method: 'PUT',
@@ -170,19 +218,22 @@ export default function MyAccount() {
       dispatch(setUserInfo(data));
       setUser(data);
       enqueueSnackbar(`${message}`, { variant: 'success' });
-
-    }catch(error){
+    } catch (error) {
       enqueueSnackbar(`${error}`, { variant: 'error' });
       dispatch(setUserInfo({}));
-      setUser({})
+      setUser({});
       setPhotoProfile({});
       router.push('/login');
     }
   };
 
+  const handleOnSelectValues = (selectedList, selectedItem) => {
+    setSelectedHabilities(selectedList);
+  };
+
   return (
-    <Layout title='Profile Page' description=' ' >
-      <main className={styles.content} >
+    <Layout title='Profile Page' description=' '>
+      <Container roleName={userInfoState?.role?.name} >
         <section className={styles['user-details']}>
           <div className={styles['back-image-container']}>
             <Image
@@ -203,12 +254,19 @@ export default function MyAccount() {
               loading='lazy'
               className={styles['user-image']}
             />
-            <p className={styles.nameFile} > { photoProfile?.file?.name }</p>
-            
-            <Tooltip title='Cambiar Foto' placement='right-start' >
-              <div className={styles['photo-select']} id='src-photo' >
-                  <PhotoCameraOutlinedIcon color='secondary' />
-                  <input type='file' id='src-photo-input' name='imageProfile' accept='image/*' aria-label="Photo" onChange={handleOnSelectPhoto} />
+            <p className={styles.nameFile}> {photoProfile?.file?.name}</p>
+
+            <Tooltip title='Cambiar Foto' placement='right-start'>
+              <div className={styles['photo-select']} id='src-photo'>
+                <PhotoCameraOutlinedIcon color='secondary' />
+                <input
+                  type='file'
+                  id='src-photo-input'
+                  name='imageProfile'
+                  accept='image/*'
+                  aria-label='Photo'
+                  onChange={handleOnSelectPhoto}
+                />
               </div>
             </Tooltip>
           </div>
@@ -227,8 +285,8 @@ export default function MyAccount() {
             <p className={styles['user-email']}>
               <span>{user?.ocupation}</span>
             </p>
-          <div className={styles['role']}> {user?.role?.name ?? ''}</div>
-            <Tooltip title='Cargar Foto' >
+            <div className={styles['role']}> {user?.role?.name ?? ''}</div>
+            <Tooltip title='Cargar Foto'>
               <IconButton onClick={handleOnUploadPhoto}>
                 <FileUploadOutlinedIcon color='secondary' />
               </IconButton>
@@ -237,24 +295,28 @@ export default function MyAccount() {
         </section>
 
         <aside className={styles['edit-profile']}>
-          <header  className={styles['header-grid']} >
+          <header className={styles['header-grid']}>
             <h4 className={styles['title-form']}>Editar Perfil</h4>
-            <div className={styles.switch} >
-              <Switch 
-                checked={isPublicProfile} 
-                onChange={handleOnChangePublicProfile}
-                inputProps={{ 'aria-label': 'controlled' }} 
-              />
-              <h4 className={styles['title-form']} >Publicar Perfil</h4>
-            </div>
+            {userInfoState?.role?.name == 'Professional' && (
+              <div className={styles.switch}>
+                <Switch
+                  checked={isPublicProfile}
+                  onChange={handleOnChangePublicProfile}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+                <h4 className={styles['title-form']}>Publicar Perfil</h4>
+              </div>
+            )}
           </header>
           <form>
             <section className={styles['grid-container']}>
-              <div className={styles['align-center']} >
+              <div className={styles['align-center']}>
                 <div className=''>
-                  <h4 className={`${styles['title-form']} ${styles['mb-3']} `}>Informacion Personal</h4>
+                  <h4 className={`${styles['title-form']} ${styles['mb-3']} `}>
+                    Informacion Personal
+                  </h4>
                 </div>
-                <div className={styles['mb-3']} >
+                <div className={styles['mb-3']}>
                   <TextFieldIcons
                     id={1}
                     label='Nombres'
@@ -269,7 +331,7 @@ export default function MyAccount() {
                     placeholder=''
                   />
                 </div>
-                <div className={styles['mb-3']} >
+                <div className={styles['mb-3']}>
                   <TextFieldIcons
                     id={2}
                     label='Apellidos'
@@ -283,7 +345,7 @@ export default function MyAccount() {
                     color='secondary'
                   />
                 </div>
-                <div className={styles['mb-3']} >
+                <div className={styles['mb-3']}>
                   <TextFieldIcons
                     id={3}
                     label='Ciudad'
@@ -297,7 +359,7 @@ export default function MyAccount() {
                     color='secondary'
                   />
                 </div>
-                <div className={styles['mb-3']} >
+                <div className={styles['mb-3']}>
                   <TextFieldIcons
                     id={4}
                     label='Telefono'
@@ -312,46 +374,78 @@ export default function MyAccount() {
                   />
                 </div>
               </div>
-              <div className={styles['align-center']} >
+              <div className={styles['align-center']}>
                 <div className={styles['Password']}>
-                  <div className=''>
-                    <h4 className={`${styles['title-form']} ${styles['mb-3']} `}>Cuota Pago</h4>
-                  </div>
-                  <div className={styles['mb-3']} >
-                    <TextFieldIcons
-                      id={5}
-                      label='Pago por hora'
-                      size='small'
-                      variant='outlined'
-                      name='payPerHour'
-                      value={user?.payPerHour}
-                      type='text'
-                      onChange={handleInputChange}
-                      focused={true}
-                      color='secondary'
-                    />
-                  </div>
-                  <div className={styles['mb-3']} >
-                    <TextFieldIcons
-                      id={6}
-                      label='Pago por Servicio'
-                      size='small'
-                      variant='outlined'
-                      name='payPerService'
-                      value={user?.payPerService}
-                      type='text'
-                      onChange={handleInputChange}
-                      focused={true}
-                      color='secondary'
-                    />
-                  </div>
+                  {
+                    userInfoState?.role?.name == 'Professional' && (<>
+                      <div className=''>
+                        <h4
+                          className={`${styles['title-form']} ${styles['mb-3']} `}
+                        >
+                          Cuota Pago
+                        </h4>
+                      </div>
+                      <div className={styles['mb-3']}>
+                        <TextFieldIcons
+                          id={5}
+                          label='Pago por hora'
+                          size='small'
+                          variant='outlined'
+                          name='payPerHour'
+                          value={user?.payPerHour}
+                          type='text'
+                          onChange={handleInputChange}
+                          focused={true}
+                          color='secondary'
+                        />
+                      </div>
+                      <div className={styles['mb-3']}>
+                        <TextFieldIcons
+                          id={6}
+                          label='Pago por Servicio'
+                          size='small'
+                          variant='outlined'
+                          name='payPerService'
+                          value={user?.payPerService}
+                          type='text'
+                          onChange={handleInputChange}
+                          focused={true}
+                          color='secondary'
+                        />
+                      </div>{' '}
+                    </>)
+                  }
+                  {userInfoState?.role?.name == 'Professional' && (<section>
+                    <div className=''>
+                      <h4
+                        className={`${styles['title-form']} ${styles['mb-3']} `}
+                      >
+                        Informacion Profesional
+                      </h4>
+                    </div>
+                    <div className={styles['mb-3']}>
+                      <HabilitiesAutocomplete
+                        habilities={habilities?.map(({ title, _id }) => ({
+                          title,
+                          _id,
+                        }))}
+                        handleOnSelectValues={handleOnSelectValues}
+                        selectedHabilities={selectedHabilities}
+                      />
+                    </div>
+                  </section>)}
                 </div>
               </div>
             </section>
-            <button className={styles['btn-update']} onClick={handleOnUpdateUser} >Actualizar Perfil</button>
+            <button
+              className={styles['btn-update']}
+              onClick={handleOnUpdateUser}
+            >
+              Actualizar Perfil
+            </button>
           </form>
         </aside>
-      </main>
+      </Container>
     </Layout>
   );
 }

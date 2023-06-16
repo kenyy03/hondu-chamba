@@ -21,6 +21,7 @@
     "eslint": "8.40.0",
     "eslint-config-next": "13.4.1",
     "framer-motion": "^10.12.9",
+    "multiselect-react-dropdown": "^2.0.25",
     "next": "13.4.1",
     "notistack": "^3.0.1",
     "prop-types": "^15.8.1",
