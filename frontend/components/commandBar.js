@@ -12,11 +12,35 @@ const style = {
   transform: 'translate(-50%, -50%)',
   width: 'auto',
   height: 'auto',
+  overflow: 'auto', 
   bgcolor: 'background.paper',
   border: '2px solid #000',
   borderRadius: '1rem',
   boxShadow: 24,
-  p: 4,
+  p: 2,
+  '&::-webkit-scrollbar': {
+    '-webkit-appearance': 'none',
+  },
+  '&::-webkit-scrollbar:vertical':  {
+    width:'10px',
+  },
+  '&::-webkit-scrollbar-button:increment': {
+    display: 'none',
+  }, 
+  '&::-webkit-scrollbar-button': {
+    display: 'none',
+  },
+  '&::-webkit-scrollbar:horizontal': {
+    height: '10px'
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: '#797979',
+    borderRadius: '20px',
+    border: '2px solid #f1f2f3',
+  },
+  '&::-webkit-scrollbar-track': {
+    borderRadius: '10px',  
+  }
 };
 
 export default function CommandBar({

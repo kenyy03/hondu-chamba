@@ -401,7 +401,7 @@ export default function MyAccount() {
                     </div>
                     <div className={styles['mb-3']}>
                       <HabilitiesAutocomplete
-                        habilities={habilities?.map(({ title, _id }) => ({
+                        habilities={habilities?.map(({ title='', _id='' }) => ({
                           title,
                           _id,
                         }))}

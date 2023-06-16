@@ -1,6 +1,6 @@
 import Multiselect from 'multiselect-react-dropdown';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
 
 export default function HabilitiesAutocomplete({
   habilities = [],
@@ -28,9 +28,13 @@ export default function HabilitiesAutocomplete({
 }
 
 HabilitiesAutocomplete.propTypes = {
-  habilities: PropTypes.array,
+  habilities: PropTypes.array.isRequired,
+  handleOnSelectValues: PropTypes.func.isRequired,
+  selectedHabilities: PropTypes.array.isRequired,
 };
 
 HabilitiesAutocomplete.defaultProps = {
   habilities: [],
+  handleOnSelectValues: () => {},
+  selectedHabilities: [],
 };

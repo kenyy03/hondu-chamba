@@ -26,7 +26,7 @@ export default function MultilineTextField({
           fullWidth={fullWidth}
           size='small'
           multiline
-          rows={6}
+          rows={5}
           helperText={helperText}
         />
     </>

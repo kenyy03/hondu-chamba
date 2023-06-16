@@ -10,9 +10,43 @@ import createEmotionCache from '@/config/createEmotionCache';
 import '@/styles/globals.css';
 import { GlobalProvider } from '@/redux/globalProvider';
 import { SnackbarProvider } from 'notistack';
+import { Global } from '@emotion/react';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
+const ScrollStyles = () => (
+  <Global 
+    styles={`                                        
+      /* Estilos para motores Webkit y blink (Chrome, Safari, Opera... )*/
+
+      body::-webkit-scrollbar {
+        -webkit-appearance: none;
+      }
+
+      body::-webkit-scrollbar:vertical {
+        width:10px;
+      }
+
+      body::-webkit-scrollbar-button:increment, body::-webkit-scrollbar-button {
+        display: none;
+      } 
+
+      body::-webkit-scrollbar:horizontal {
+        height: 10px;
+      }
+
+      body::-webkit-scrollbar-thumb {
+        background-color: #797979;
+        border-radius: 20px;
+        border: 2px solid #f1f2f3;
+      }
+
+      body::-webkit-scrollbar-track {
+        border-radius: 10px;  
+      }
+    `}
+  />
+);
 
 export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
@@ -28,6 +62,7 @@ export default function MyApp(props) {
         <ChakraProvider>
           <GlobalProvider>
             <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
+              <ScrollStyles />
               <Component {...pageProps} />
             </SnackbarProvider>
           </GlobalProvider>
