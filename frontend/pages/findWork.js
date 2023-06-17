@@ -19,6 +19,7 @@ import MultilineTextField from '@/components/multilineTextField';
 import { enqueueSnackbar } from 'notistack';
 import { enviroment } from '@/config/enviroment';
 import HabilitiesAutocomplete from '@/components/habilitiesAutocomplete';
+import * as Helper from '../config/helpers/index';
 
 const Container = styled.main(props => ({
   margin: props.roleName === 'Recruiter' ? '5rem 15rem' : '10rem 15rem',
@@ -54,17 +55,17 @@ const Fields = styled.section(props => ({
   justifyContent: 'center',
 }));
 
-export default function FindWork() {
+export default function FindWork({ jobsFetch = [] }) {
   const userInfoState = useSelector(state => state.userReducer.userInfo);
   const habilitiesInfoState = useSelector(
     state => state.habilitiesReducer.habilities
   );
   const [selectedEmploye, setSelectedEmploye] = useState(
-    employes?.find(f => f.id === 1)
+    jobsFetch[0] ?? {}
   );
   const [showModal, setShowModal] = useState(false);
   const [employesDetails, setEmployesDetails] = useState({});
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState( jobsFetch ?? []);
   const [habilities] = useState(habilitiesInfoState ?? []);
   const [selectedHabilities, setSelectedHabilities] = useState([]);
 
@@ -97,11 +98,19 @@ export default function FindWork() {
         payPerService = 0,
       } = employesDetails;
       const url = `${enviroment.DEV_BASE_API_URL}/create-job`;
+
+      const isValidFields = !([jobName, jobType, requirements, description, city, address, payPerService].includes('') 
+        || selectedHabilities.length <= 1);
+      if( !isValidFields ){
+        enqueueSnackbar(`Todos los campos son requeridos`, {
+          variant: 'error',
+        });
+        return;
+      }
       const newJob = {
-        nameEmployer: `${userInfoState?.names} ${userInfoState?.lastNames}`,
+        employer: userInfoState?._id,
         jobName,
         jobType,
-        imageCompany: userInfoState?.imageProfile?.url,
         description,
         requirements: requirements
           ?.split('.')
@@ -112,6 +121,13 @@ export default function FindWork() {
         payPerService,
         skills: selectedHabilities?.map(({ _id = '' }) => _id),
       };
+
+      if(!Helper.isFullObjectAndValues(newJob)){
+        enqueueSnackbar(`Todos los campos son requeridos`, {
+          variant: 'error',
+        });
+        return;
+      }
       
       const response = await fetch(url, {
         method: 'POST',
@@ -133,6 +149,8 @@ export default function FindWork() {
       const jobsUpdated = [...jobs, data];
       setJobs(jobsUpdated);
       enqueueSnackbar(`${message}`, { variant: 'success' });
+      onCloseModal();
+      setEmployesDetails({});
     } catch (error) {
       enqueueSnackbar(`Error al crear la plaza: ${error?.message}`, {
         variant: 'error',
@@ -282,19 +300,19 @@ export default function FindWork() {
           <div>
             <h2>Listado de empleos</h2>
             <List>
-              {employes?.map(employe => (
+              {jobs?.map(job => (
                 <ListItem
-                  key={employe?.id}
+                  key={job?._id}
                   alignItems='center'
                   divider
                   disablePadding
                 >
                   <ListItemButton
-                    selected={selectedEmploye?.id === employe?.id}
-                    onClick={e => setSelectedEmploye(employe)}
+                    selected={selectedEmploye?.id === job?._id}
+                    onClick={e => setSelectedEmploye(job)}
                   >
                     <ListItemText
-                      primary={employe?.nombreVacante}
+                      primary={job?.jobName}
                       primaryTypographyProps={{
                         fontSize: '20px',
                         fontWeight: 'bold',
@@ -308,10 +326,10 @@ export default function FindWork() {
                             variant='body2'
                             color='text.primary'
                           >
-                            {`${employe?.Empleador} - ${employe?.lugar}`}
+                            {`${job?.employer?.names} ${job?.employer?.lastNames} - ${job?.city}`}
                           </Typography>
                           <br />
-                          Plaza - {employe?.tipoPlaza}
+                          Plaza - {job?.jobType}
                         </>
                       }
                     />
@@ -328,8 +346,8 @@ export default function FindWork() {
                 <Image
                   width={60}
                   height={30}
-                  alt={`${selectedEmploye?.id} - ${selectedEmploye?.nombreVacante}`}
-                  src={selectedEmploye?.imageCompany}
+                  alt={`${selectedEmploye?._id} - ${selectedEmploye?.jobName}`}
+                  src={selectedEmploye?.employer?.imageProfile?.url ?? ''}
                   loading='lazy'
                 />
               </div>
@@ -337,16 +355,16 @@ export default function FindWork() {
                 className={`${utilities['principal-font']} ${utilities['mb-2']} `}
               >
                 <h3 className={styles['vacant-name']}>
-                  {selectedEmploye?.nombreVacante}
+                  {selectedEmploye?.jobName}
                 </h3>
                 <h4 className={`${styles.employer} ${utilities['mb-1']}`}>
-                  {selectedEmploye.Empleador}
+                  {selectedEmploye?.employer?.names}{' '} {selectedEmploye?.employer?.lastNames}
                 </h4>
                 <p className={styles.details}>
-                  {selectedEmploye.lugar} - Plaza {selectedEmploye.tipoPlaza}{' '}
+                  {selectedEmploye?.city} - Plaza {selectedEmploye?.jobType}{' '}
                 </p>
                 <p className={styles['post-date']}>
-                  {selectedEmploye.fechaPublicacion}
+                  {selectedEmploye?.createdAt?.toLocaleString( 'es-ES', { year: 'numeric', month: 'long', day: 'numeric' } )}
                 </p>
               </div>
               <div className={styles.actions}>
@@ -359,13 +377,13 @@ export default function FindWork() {
             <article>
               <h3 className={styles.employer}>Detalles de la plaza</h3>
               <p className={`${styles.details} ${utilities['mt-1']}`}>
-                {selectedEmploye?.detailsEmploye?.description}
+                {selectedEmploye?.description}
               </p>
               <h3 className={`${styles.employer} ${utilities['mt-1']}`}>
                 Requisitos
               </h3>
               <ul className={utilities['mx-2']}>
-                {selectedEmploye?.detailsEmploye?.requirements?.map(
+                {selectedEmploye?.requirements?.map(
                   (requirement, index) => (
                     <li
                       className={`${styles.details} ${utilities['mt-1']}`}
@@ -470,3 +488,25 @@ export const employes = [
     },
   },
 ];
+
+export async function getServerSideProps () {
+  try{
+    const url = `${enviroment.DEV_BASE_API_URL}/get-jobs`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', },
+    });
+
+    if (!response.ok) throw new Error(`${response?.statusText}: Error al obtener los roles`);
+
+    const { data = [] } = await response.json();
+
+    return {
+      props: {
+        jobsFetch: data,
+      },
+    };
+  }catch(error){
+    console.log(error);
+  }
+};
