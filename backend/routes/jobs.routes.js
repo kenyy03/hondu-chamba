@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const jobController = require('../controllers/job.controller');
+const jobController = require('../controllers/jobs.controller');
 const verifyJwt = require('../middlewares/verify.jwt.middleware');
 
 router.post('/create-job', [verifyJwt.veryfyToken], jobController.createJob);
