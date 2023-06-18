@@ -166,6 +166,14 @@
   justify-content: center;
 } 
 
+.personal-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+}
+
 .label-form {
   font-size: .7rem;
   font-weight: 500;

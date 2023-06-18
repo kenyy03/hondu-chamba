@@ -19,7 +19,6 @@ import MultilineTextField from '@/components/multilineTextField';
 import { enqueueSnackbar } from 'notistack';
 import { enviroment } from '@/config/enviroment';
 import HabilitiesAutocomplete from '@/components/habilitiesAutocomplete';
-import * as Helper from '../config/helpers/index';
 
 const Container = styled.main(props => ({
   margin: props.roleName === 'Recruiter' ? '5rem 15rem' : '10rem 15rem',
@@ -121,13 +120,6 @@ export default function FindWork({ jobsFetch = [] }) {
         payPerService,
         skills: selectedHabilities?.map(({ _id = '' }) => _id),
       };
-
-      if(!Helper.isFullObjectAndValues(newJob)){
-        enqueueSnackbar(`Todos los campos son requeridos`, {
-          variant: 'error',
-        });
-        return;
-      }
       
       const response = await fetch(url, {
         method: 'POST',

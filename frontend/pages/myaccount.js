@@ -15,6 +15,8 @@ import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import { IconButton, Switch, Tooltip } from '@mui/material';
 import HabilitiesAutocomplete from '@/components/habilitiesAutocomplete';
 import styled from '@emotion/styled';
+import { imageProfileDefault } from '@/config/helpers/constants';
+import MultilineTextField from '@/components/multilineTextField';
 
 const Container = styled.main((props) =>({
   display: 'grid',
@@ -39,7 +41,7 @@ export default function MyAccount() {
   );
   const dispatch = useDispatch();
   const router = useRouter();
-  const imageProfileDefault = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+  
 
   useEffect(() => {
     if (!userInfoState) {
@@ -91,7 +93,16 @@ export default function MyAccount() {
       const url = `${enviroment.DEV_BASE_API_URL}/update-user`;
       const newHabilites = selectedHabilities.map(({ _id }) => _id);
       const userToUpdate = structuredClone(user);
+      const { names, lastNames, city, phone, payPerHour, payPerService } = userToUpdate;
       userToUpdate.habilities = newHabilites;
+      const isValidUser = newHabilites.length > 0 
+        || !([names, lastNames, city, phone].includes('')) 
+        || payPerHour > 0 || payPerService > 0 ;
+
+      if (!isValidUser) {
+        enqueueSnackbar('Todos los campos son requeridos', { variant: 'error' });
+        return;
+      }
 
       const response = await fetch(url, {
         method: 'PUT',
@@ -138,6 +149,12 @@ export default function MyAccount() {
       formData.append('imageProfile', photoProfile.file);
       formData.append('_id', user?._id);
 
+      const isImageSelected = !(!photoProfile.file || user?._id === '' || !user?._id);
+      if( !isImageSelected ){
+        enqueueSnackbar(`Debe seleccionar una imagen`, { variant: 'error' });
+        return;
+      }
+
       const response = await fetch(
         `${enviroment.DEV_BASE_API_URL}/change-image-profile`,
         {
@@ -168,6 +185,16 @@ export default function MyAccount() {
   };
 
   const handleOnChangePublicProfile = e => {
+    const { names, lastNames, city, payPerHour, payPerService } = user;
+    const isValidUser = !([names, lastNames, city].includes('')) 
+      || payPerHour > 0 || payPerService > 0
+      || selectedHabilities.length > 0 ;
+    
+      if( !isValidUser ){
+      enqueueSnackbar(`Debe terminar de configurar su perfil`, { variant: 'error' });
+      return;
+    }
+    
     setIsPublicProfile(e.target.checked);
     handleOnUpdatePublicProfile(e.target.checked);
   };
@@ -288,7 +315,7 @@ export default function MyAccount() {
           </header>
           <form>
             <section className={styles['grid-container']}>
-              <div className={styles['align-center']}>
+              <div className={styles['personal-info']}>
                 <div className=''>
                   <h4 className={`${styles['title-form']} ${styles['mb-3']} `}>
                     Informacion Personal
@@ -402,6 +429,16 @@ export default function MyAccount() {
                       </h4>
                     </div>
                     <div className={styles['mb-3']}>
+                      <section className={styles['mb-3']} >
+                        <MultilineTextField 
+                          id={10}
+                          label='Descripcion'
+                          value={user?.description}
+                          name='description'
+                          onChange={handleInputChange}
+                          fullWidth={true}                        
+                        />
+                      </section>
                       <HabilitiesAutocomplete
                         habilities={habilities?.map(({ title='', _id='' }) => ({
                           title,

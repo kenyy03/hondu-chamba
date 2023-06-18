@@ -53,7 +53,7 @@ export default function SimpleAccordion({ my = 'my-1', fontSize = '12px' }) {
         <AccordionDetails>
           <TextField
             id='outlined-basic'
-            label='Buscar colonia'
+            label='Buscar ciudad'
             variant='outlined'
             fullWidth
           />

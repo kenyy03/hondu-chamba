@@ -10,3 +10,5 @@ export const categoriesIcons =(fontSize= 50) => ({
   'Moda & Belleza': <Face2 sx={{fontSize: fontSize}} color='secondary' />,
   'Educacion': <SchoolOutlined sx={{fontSize: fontSize}} color='secondary' />,
 });
+
+export const imageProfileDefault = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
