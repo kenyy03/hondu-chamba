@@ -9,19 +9,23 @@ import { enviroment } from '@/config/enviroment';
 import * as Helper from '@/config/helpers/index';
 import { useDispatch } from 'react-redux';
 import { setUserInfo } from '@/redux/features/userSlice';
+import { useRouter } from 'next/router';
+import { enqueueSnackbar } from 'notistack';
 
+const initialUser = {
+  names: '',
+  lastNames: '',
+  email: '',
+  password: '',
+  phone: '',
+  role: '',
+  ocupation: '',
+}
 export default function Signup({ roles = [] }) {
   const [selectedRole, setSelectedRole] = useState('');
-  const [newUser, setNewUser] = useState({
-    names: '',
-    lastNames: '',
-    email: '',
-    password: '',
-    phone: '',
-    role: '',
-    ocupation: '',
-  });
+  const [newUser, setNewUser] = useState(initialUser);
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const handleInputChanges = e => {
     setNewUser({
@@ -41,8 +45,14 @@ export default function Signup({ roles = [] }) {
   const handleCreateAccount = async () => {
     const url = `${enviroment?.DEV_BASE_API_URL}/signup`;
     try {
+      const { names, lastNames, email, ocupation, password, phone, role } = newUser;
+      if([names, lastNames, email, ocupation, password, phone].includes('')){
+        enqueueSnackbar('Todos los campos son requeridos', { variant: 'error' });
+        return;
+      }
+
       if (!Helper.isFullObjectAndValues(newUser)) {
-        alert('Todos los campos son requeridos');
+        enqueueSnackbar('Todos los campos son requeridos', { variant: 'error' } );
         return;
       }
 
@@ -56,9 +66,12 @@ export default function Signup({ roles = [] }) {
       if (!response.ok)
         throw new Error(`${response.statusText}: Error al crear la cuenta`);
       
-      const { data = {} } = await response.json();
+      const { data = {}, message='' } = await response.json();
       console.log(data);
       dispatch(setUserInfo(data));
+      setNewUser(initialUser);
+      enqueueSnackbar(`${response?.statusText}: ${message}`, { variant: 'success' });
+      router.push('/');
     } catch (error) {
       console.error(error);
     }

@@ -50,6 +50,10 @@ export default function Login() {
       }
       enqueueSnackbar(`${response.statusText}: ${message}`, { variant: 'success' })
       dispatch(setUserInfo(data));
+      if(data?.role?.name === 'Recruiter') {
+        router.push('/findWork')
+        return;
+      }
       router.push('/findTalent');
     } catch (error) {
       console.error(error);

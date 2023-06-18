@@ -23,20 +23,14 @@ export default function Layout({
         <meta name='description' content={description} />
       </Head>
       <Navbar isOnLogin={isOnLogin} />
-      {/* {userInfoState?.role?.name && (
+      {userInfoState?.role?.name === 'Recruiter' && (
         <CommandBar
           onShowModal={onShowModal}
           onCloseModal={onCloseModal}
           showModal={showModal}
           onRenderContentModal={onRenderContentModal}
         />
-      )} */}
-      <CommandBar
-        onShowModal={onShowModal}
-        onCloseModal={onCloseModal}
-        showModal={showModal}
-        onRenderContentModal={onRenderContentModal}
-      />
+      )}
       <>{children}</>
       <Footer />
     </>

@@ -50,7 +50,7 @@ export default function Navbar({ isOnLogin = false }) {
             </Text>
           </Button>)}
           {userInfoState?.token && (
-            <AccountMenu />
+            <AccountMenu userInfo={userInfoState} />
           )}
         </Flex>
       </Flex>

@@ -11,12 +11,12 @@ import { Avatar } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 
-export default function AccountMenu() {
+export default function AccountMenu({ userInfo }) {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const handleLogout = () => {
-    router.push('/');
+  const handleLogout = async () => {
+    await router.push('/');
     dispatch(setUserInfo({}));
   }
 
@@ -28,7 +28,10 @@ export default function AccountMenu() {
     <div>
       <Menu>
         <MenuButton as={IconButton} >
-          <Avatar />
+          <Avatar 
+            alt={`image-profile-${userInfo?.names}-${userInfo?.lastNames}`} 
+            src={userInfo?.imageProfile?.url ?? ''}
+          />
         </MenuButton>
         <MenuList>
           <MenuItem onClick={handleNavigateToMyAccount} >Mi cuenta</MenuItem>

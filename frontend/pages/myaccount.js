@@ -22,6 +22,7 @@ const Container = styled.main((props) =>({
   gap: '5rem',
   gridTemplateColumns: '1.5fr 3.5fr',
   margin: props.roleName === 'Recruiter' ? '5.1278rem 15rem' : '10.1278rem 15rem',
+  ...( props.roleName === 'Recruiter' && ({ marginBottom: '10.1278rem' }) )
 }) );
 
 export default function MyAccount() {
@@ -38,6 +39,7 @@ export default function MyAccount() {
   );
   const dispatch = useDispatch();
   const router = useRouter();
+  const imageProfileDefault = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
 
   useEffect(() => {
     if (!userInfoState) {
@@ -226,7 +228,7 @@ export default function MyAccount() {
               width={700}
               height={600}
               alt={`${user?._id} - ${user?.names}`}
-              src={user?.imageProfile?.url}
+              src={user?.imageProfile?.url || user?.imageProfile?.url === '' && imageProfileDefault}
               loading='lazy'
               className={styles['user-image']}
             />
