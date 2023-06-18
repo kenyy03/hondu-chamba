@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema(
     servicesCanceledByClient: { type: Number, default: 0 },
     habilities: { type: Array, default: [], ref: 'habilities' },
     isPublicProfile: { type: Boolean, default: false },
+    description: { type: String, default: ''}
   },
   {
     timestamps: {
