@@ -1,37 +1,16 @@
 // Get Dependencies
-const express = require('express');
-require('dotenv').config();
-const cors = require('cors');
+const app= require('./app');
+const dotenv = require('dotenv');
 const config = require('./config/index').config;
-const fileUpload = require('express-fileupload');
+const dbConnection = require('./config/database.config');
+const http = require('http');
+const { Server:WebSocketServer } = require('socket.io')
 
-// Routes
-const roleRoutes = require('./routes/role.routes');
-const authRoutes = require('./routes/user.auth.routes');
-const categoryRoutes = require('./routes/category.routes');
-const habilityRoutes = require('./routes/hability.routes');
-const jobsRoutes = require('./routes/jobs.routes');
+dbConnection.connect();
+dotenv.config();
 
-const app = express();
 const port = config.PORT || 5000;
-const urlPrefix = config.URL_PREFIX || '/api/v1';
 
-// Middlewares
-app.use(express.urlencoded({ extended: true, limit: '100bm' }));
-app.use(express.json(limit = '100bm'));
-app.use(cors({origin: ['http://localhost:3000', 'http://127.0.0.1:3000']}))
-app.use(fileUpload({
-  useTempFiles : true,
-  tempFileDir : '/tmp/'
-}))
-require('./config/database.config').connect();
-
-app.use(urlPrefix, [
-  authRoutes,
-  roleRoutes,
-  categoryRoutes,
-  habilityRoutes,
-  jobsRoutes,
-]);
-
-app.listen(port, () => console.log(`Server running on port ${port}`));
+const server  = http.createServer(app);
+const httpServer = server.listen(port, () => console.log(`Server running on port ${port}`));
+const io = new WebSocketServer(httpServer);
