@@ -8,13 +8,14 @@ import {
   Heading,
   Text,
 } from '@chakra-ui/react';
-import { AccountCircle, LockOutlined } from '@mui/icons-material';
+import { AccountCircle } from '@mui/icons-material';
 import React, { useState } from 'react';
 import TextFieldIcons from '@/components/textFieldIcons';
 import { useDispatch } from 'react-redux';
 import { setUserInfo } from '@/redux/features/userSlice';
 import { useSnackbar } from 'notistack';
 import { useRouter } from 'next/router';
+import TextFieldPassword from '@/components/textFieldPassword';
 
 export default function Login() {
   const [userLog, setUserLog] = useState({
@@ -61,7 +62,6 @@ export default function Login() {
   };
 
   const onRenderAccountIcon = () => (<AccountCircle color='secondary' />);
-  const onRenderPasswordIcon = () => (<LockOutlined color='secondary' />);
 
   return (
     <Layout
@@ -109,17 +109,11 @@ export default function Login() {
             focused={true}
           />
 
-          <TextFieldIcons
-            id={2} 
-            label='Contraseña'
-            name='password'
+          <TextFieldPassword 
+            id={3}
             value={userLog?.password}
             onChange={handleInputChanges}
-            onRenderIcon={onRenderPasswordIcon}
-            placeholder='********'
-            type='password'
-            color='secondary'
-            focused={true}
+            onKeyDown={e => e.key === 'Enter' && handleLogin()}
           />
 
           <Button
