@@ -4,6 +4,10 @@ import Navbar from './navbar';
 import Footer from './footer';
 import { useSelector } from 'react-redux';
 import CommandBar from './commandBar';
+import io from 'socket.io-client';
+import Chat from './chat';
+
+const socket = io('http://localhost:3010');
 
 export default function Layout({
   children,
@@ -16,6 +20,7 @@ export default function Layout({
   showModal = false,
 }) {
   const userInfoState = useSelector(state => state.userReducer.userInfo);
+
   return (
     <>
       <Head>
@@ -32,6 +37,7 @@ export default function Layout({
         />
       )}
       <>{children}</>
+      { userInfoState?.token && (<Chat socket={socket} userInfo={userInfoState}  />)}
       <Footer />
     </>
   );
