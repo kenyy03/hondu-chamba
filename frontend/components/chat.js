@@ -6,6 +6,8 @@ import TextFieldIcons from './textFieldIcons';
 import { IconButton } from '@mui/material';
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import { useDispatch, useSelector } from 'react-redux';
+import { setReceiver } from '@/redux/features/userSlice';
 
 const FormStyle = styled.form`
   height: 100%;
@@ -25,6 +27,7 @@ const CustomSectionContainer = styled.section( ({ collapse }) => ({
   borderTopRightRadius: '1rem',
   borderTopLeftRadius: '1rem',
   boxShadow: '0 0 10px var(--gray)',
+  transition: 'all .5s ease-in-out',
 }) );
 
 const Container = styled.div`
@@ -93,29 +96,44 @@ export default function Chat({ socket, userInfo }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [collapse, setCollapse] = useState(false);
+  const receiverState = useSelector(state => state.userReducer.receiver);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    socket.on('message', receiveMessage)
+    socket.emit('client:join', userInfo);
 
-    return () => socket.off('message', receiveMessage);
+    socket.on('server:message', receiveMessage)
+
+    return () => {
+      socket.off('server:message', receiveMessage);
+      // socket.emit('client:disconnect');
+    };
   }, []);
 
   const receiveMessage = (message) => {
-    setMessages((state) => [...state, message] )
+    dispatch(setReceiver(message));
+    setMessages((state) => [...state, message] );
+    if (!collapse) {
+      setCollapse(true);
+    }
   };
   
   const handleOnSubmitMessages = (e) => {
     e.preventDefault();
     const newMessage = {
+      userId: userInfo?._id,
       from: 'Me',
       body: message,
-    }
+      to: receiverState?._id ?? receiverState?.userId ,
+    };
     setMessages([...messages, newMessage]);
     const messageToSend = {
+      userId: userInfo?._id,
+      to: receiverState?._id ?? receiverState?.userId,
       from: `${userInfo?.names} ${userInfo?.lastNames}`,
       body: message,
     };
-    socket.emit('message', messageToSend);
+    socket.emit('client:message', messageToSend);
     setMessage('');
   }
 
@@ -137,8 +155,8 @@ export default function Chat({ socket, userInfo }) {
             {collapse && (
             <>
               <CustomList>
-                { (messages.map((message, index) => (
-                  <CustomListItem from={message.from}  key={index} >{`${message.from}: ${message.body}`}</CustomListItem>
+                { (messages?.map((message, index) => (
+                  <CustomListItem from={message?.from}  key={index} >{`${message?.from}: ${message?.body}`}</CustomListItem>
                 )))}
               </CustomList>
               <FooterChat>
@@ -167,4 +185,5 @@ export default function Chat({ socket, userInfo }) {
 
 Chat.propTypes = {
   socket: propTypes.object.isRequired,
+  userInfo: propTypes.object.isRequired,
 };

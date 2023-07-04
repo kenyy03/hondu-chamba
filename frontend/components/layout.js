@@ -37,7 +37,12 @@ export default function Layout({
         />
       )}
       <>{children}</>
-      { userInfoState?.token && (<Chat socket={socket} userInfo={userInfoState}  />)}
+      {(userInfoState?.token ) && (
+          <Chat
+            socket={socket}
+            userInfo={userInfoState}
+          />
+        )}
       <Footer />
     </>
   );
