@@ -25,7 +25,7 @@ exports.createJob = async (req, res) => {
       requirements,
       skills,
     });
-    const savedJob = await job.save();
+    const savedJob = (await job.save()).populate('employer').populate('skills');
     res.status(201).json({ message: 'Job created', data: savedJob });
   } catch (error) {
     res.status(500).json({
