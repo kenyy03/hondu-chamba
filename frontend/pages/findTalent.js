@@ -40,6 +40,9 @@ export default function FindTalent({ freelancersFetch = [] }) {
 }
 
 export async function getServerSideProps () {
+  const props = {
+    freelancersFetch: [],
+  };
   try{
     const url = `${enviroment.DEV_BASE_API_URL}/get-users-by-is-public-profile`;
     const response = await fetch(url, {
@@ -58,5 +61,8 @@ export async function getServerSideProps () {
     };
   }catch(error){
     console.log(error);
+    return {
+      props,
+    }
   }
 };
