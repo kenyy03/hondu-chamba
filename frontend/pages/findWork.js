@@ -13,12 +13,14 @@ import {
 } from '@mui/material';
 import Image from 'next/image';
 import styled from '@emotion/styled';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import TextFieldIcons from '@/components/textFieldIcons';
 import MultilineTextField from '@/components/multilineTextField';
 import { enqueueSnackbar } from 'notistack';
 import { enviroment } from '@/config/enviroment';
 import HabilitiesAutocomplete from '@/components/habilitiesAutocomplete';
+import { setReceiver } from '@/redux/features/userSlice';
+import { getUserInfo } from '@/config/helpers/fetch';
 
 const Container = styled.main(props => ({
   margin: props.roleName === 'Recruiter' ? '5rem 15rem' : '10rem 15rem',
@@ -56,6 +58,7 @@ const Fields = styled.section(props => ({
 
 export default function FindWork({ jobsFetch = [] }) {
   const userInfoState = useSelector(state => state.userReducer.userInfo);
+  const dispatch = useDispatch();
   const habilitiesInfoState = useSelector(
     state => state.habilitiesReducer.habilities
   );
@@ -277,6 +280,24 @@ export default function FindWork({ jobsFetch = [] }) {
     setSelectedHabilities(selectedList);
   };
 
+  const handleOnShowChat = async () => {
+    try{
+      const receiverId = selectedEmploye?.employer?._id;
+      const receiver = await getUserInfo({ receiverId, token: userInfoState?.token });
+      if(receiver?.message){
+        enqueueSnackbar(receiver?.message, {
+          variant: 'error',
+        });
+        return;
+      }
+      dispatch(setReceiver(receiver));
+    }catch(error){
+      enqueueSnackbar(error, {
+        variant: 'info',
+      });
+    }
+  };
+
   return (
     <Layout
       title='Find Work'
@@ -356,12 +377,12 @@ export default function FindWork({ jobsFetch = [] }) {
                   {selectedEmploye?.city} - Plaza {selectedEmploye?.jobType}{' '}
                 </p>
                 <p className={styles['post-date']}>
-                  {selectedEmploye?.createdAt?.toLocaleString( 'es-ES', { year: 'numeric', month: 'long', day: 'numeric' } )}
+                  {new Date(selectedEmploye?.createdAt).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}
                 </p>
               </div>
               <div className={styles.actions}>
                 <div>
-                  <Button variant='outlined'>Solicitar</Button>
+                  <Button variant='outlined' onClick={handleOnShowChat} >Solicitar</Button>
                 </div>
               </div>
             </header>
