@@ -19,9 +19,11 @@ export default function Freelancer({ freelancerProp={} }) {
           <Image 
             width={700}
             height={600}
+            loading='lazy'
             src={freelancerProp?.imageProfile?.url || freelancerProp?.imageProfile?.url === '' && imageProfileDefault } 
             alt={`freelancer-${freelancerProp?.names}-${freelancerProp?.lastNames}`} 
             className={styles['freelancer-image']} />
+            
         </div>
         <div className={styles['container-freelancer-info']} >
           <header style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%'}} >
