@@ -102,15 +102,28 @@ export default function Chat({ socket, userInfo }) {
   useEffect(() => {
     socket.emit('client:join', userInfo);
 
+    socket.on('server:loadChats', loadMessages);
     socket.on('server:message', receiveMessage)
 
     return () => {
       socket.off('server:message', receiveMessage);
+      socket.off('server:loadChats', loadMessages);
+      socket.off('client:join', userInfo);
       // socket.emit('client:disconnect');
     };
   }, []);
 
-  const receiveMessage = (message) => {
+  const loadMessages = (messages = []) => {debugger;
+    const mappedMessages = messages?.map((message) => ({
+      userId: message?.sender._id === userInfo?._id ? message?.sender._id : message?.receiver?._id,
+      body: message?.message,
+      from: message?.sender._id === userInfo?._id ? 'Me' : `${message?.sender?.names} ${message?.sender?.lastNames}`,
+      to: receiverState?._id ?? receiverState?.userId,
+    }));
+    setMessages([...mappedMessages]);
+  }
+
+  const receiveMessage = (message) => {debugger;
     dispatch(setReceiver(message));
     setMessages((state) => [...state, message] );
     if (!collapse) {
