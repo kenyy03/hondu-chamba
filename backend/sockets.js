@@ -18,7 +18,29 @@ module.exports = (io) => {
         socket.emit('server:messageError', {message: 'You are not allowed to send more messages'})
         socket.disconnet();
       }
+      
+    if( connectedUsers.length === 2){
+      emitChats(connectedUsers);
+    }
     });
+
+    const emitChats = async (users) => {
+      let messages = [];
+      const sender = users[0];
+      const receiver = users[1];
+      try {
+        
+        messages = await Chat.find().or([
+          { sender: sender._id, receiver: receiver._id },
+          { sender: receiver._id, receiver: sender._id },
+        ]).populate('sender receiver');
+  
+        socket.emit('server:loadChats', messages);
+      }catch (error) {
+        console.error(error);
+        socket.emit('server:loadChats', messages)
+      }
+    };
 
     socket.on('client:message', async (body) => {
       // Save to database
@@ -28,13 +50,8 @@ module.exports = (io) => {
         message: body.body,
       });
 
-      // chat.save();
+      await chat.save();
 
-      // Find messages from database
-      const messages = await Chat.find().or([
-        { sender: body.userId, receiver: body.to },
-        { sender: body.to, receiver: body.userId },
-      ]);
       // Send to all clients
 
       const sender = connectedUsers.find((user) => user._id === body.userId);
