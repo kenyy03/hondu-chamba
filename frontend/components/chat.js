@@ -3,11 +3,14 @@ import propTypes from 'prop-types';
 import React, { useEffect, useState } from 'react'
 import styled from '@emotion/styled';
 import TextFieldIcons from './textFieldIcons';
-import { IconButton } from '@mui/material';
+import { Button, IconButton, Tooltip } from '@mui/material';
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReceiver } from '@/redux/features/userSlice';
+import ModalControl from './modal';
 
 const FormStyle = styled.form`
   height: 100%;
@@ -78,7 +81,7 @@ const CustomListItem = styled.li(({ from }) => ({
   color: from === 'Me' ? 'var(--white)' : 'var(--black)',
   fontSize: '1.2rem',
   ...(from === 'Me' && ({marginLeft: 'auto'}) )
-}) );
+}));
 
 const Header = styled.header`
   width: 100%;
@@ -92,10 +95,19 @@ const FooterChat = styled.div`
   align-items: flex-end;
 `;
 
+const FooterModal = styled.footer`
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-top: 1rem;
+  gap: 1.5rem;
+`;
+
 export default function Chat({ socket, userInfo }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [collapse, setCollapse] = useState(false);
+  const [openSendContractDialog, setOpenSendContractDialog] = useState(false);
   const receiverState = useSelector(state => state.userReducer.receiver);
   const dispatch = useDispatch();
 
@@ -113,7 +125,7 @@ export default function Chat({ socket, userInfo }) {
     };
   }, []);
 
-  const loadMessages = (messages = []) => {debugger;
+  const loadMessages = (messages = []) => {
     const mappedMessages = messages?.map((message) => ({
       userId: message?.sender._id === userInfo?._id ? message?.sender._id : message?.receiver?._id,
       body: message?.message,
@@ -123,7 +135,7 @@ export default function Chat({ socket, userInfo }) {
     setMessages([...mappedMessages]);
   }
 
-  const receiveMessage = (message) => {debugger;
+  const receiveMessage = (message) => {
     dispatch(setReceiver(message));
     setMessages((state) => [...state, message] );
     if (!collapse) {
@@ -154,6 +166,8 @@ export default function Chat({ socket, userInfo }) {
     e.preventDefault();
     setCollapse((state) => !state);
   }
+
+  const handleCloseModal = () => setOpenSendContractDialog(false);
 
   return (
     <>
@@ -187,11 +201,39 @@ export default function Chat({ socket, userInfo }) {
                   fullWidth={false}
                   size='small'
                 />
+                <Tooltip title='Enviar contrato' >
+                  <IconButton 
+                    aria-label='attach' 
+                    color='secondary' 
+                    onClick={() => setOpenSendContractDialog(true)} 
+                  > 
+                    <AttachFileIcon /> 
+                  </IconButton>
+                </Tooltip>
               </FooterChat>
             </> )}
           </Container>
         </FormStyle>
       </CustomSectionContainer>
+      <ModalControl 
+        open={openSendContractDialog} 
+        handleClose={handleCloseModal} 
+        title='Deseas enviar un contrato?' 
+      >
+        <p>Si envias un contrato, el usuario podrá aceptarlo o rechazarlo.</p>
+        <FooterModal>
+          <section>
+            <Button variant="contained" endIcon={<SendIcon />}>
+              Enviar
+            </Button>
+          </section>
+          <section>
+            <Button variant="contained" color='error' endIcon={<CancelIcon />} onClick={handleCloseModal} >
+              Cancelar
+            </Button>
+          </section>
+        </FooterModal>
+      </ModalControl>
     </>
   )
 }
