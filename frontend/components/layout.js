@@ -45,7 +45,7 @@ export default function Layout({
     }, []);
 
     if (isLoading) {
-      return <Loading />
+      return <Loading open={isLoading} />
     }
 
   return (
